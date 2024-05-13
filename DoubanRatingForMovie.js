@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
-// @namespace    https://ciphersaw.me/
+// @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
 // @version      1.0.0
 // @description  Display Douban rating for online movies.
 // @description:zh-CN  在主流电影网站上显示豆瓣评分。
@@ -12,6 +12,8 @@
 // @connect      douban.com
 // @license      GPL-3.0
 // @grant        GM_xmlhttpRequest
+// @downloadURL  https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.user.js
+// @updateURL    https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.meta.js
 // ==/UserScript==
 
 'use strict';
@@ -74,9 +76,23 @@ function OLEVOD_getTitle() {
 }
 
 function OLEVOD_setMainRating(rating) {
-    const ratingObj = $('.content_detail .data>.text_muted:first-child');
-    const text = ratingObj.text().trim();
-    ratingObj.text(text + rating);
+    if (OLEVOD_isDetailPage()) {
+        let ratingObj = $('.content_detail .data>.text_muted:first-child');
+        const text = ratingObj.text().trim();
+        ratingObj.text(text + rating);
+    } else if (OLEVOD_isPlayPage()) {
+        let ratingObj = $('.play_text .nstem');
+        const replacedText = ratingObj.html().replace('豆瓣评分：', '豆瓣评分：' + rating);
+        ratingObj.html(replacedText);
+    }
+}
+
+function OLEVOD_isDetailPage() {
+    return /.+\/vod\/detail\/id\/\d+.*/.test(location.href);
+}
+
+function OLEVOD_isPlayPage() {
+    return /.+\/vod\/play\/id\/\d+.*/.test(location.href);
 }
 
 async function getDoubanRating(title) {
@@ -103,7 +119,7 @@ async function getDoubanRating(title) {
         });
     });
     return ratingNums;
-};
+}
 
 function resolveDoubanRatingResult(data) {
     const s = data.find('.result-list .result:first-child');
