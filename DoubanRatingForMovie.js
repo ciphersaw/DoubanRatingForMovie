@@ -12,6 +12,7 @@
 // @connect      douban.com
 // @license      GPL-3.0
 // @grant        GM_xmlhttpRequest
+// @supportURL   https://github.com/ciphersaw/DoubanRatingForMovie/issues
 // @downloadURL  https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.user.js
 // @updateURL    https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.meta.js
 // ==/UserScript==
@@ -29,9 +30,9 @@ class Logger {
     constructor(initialLevel = 'INFO') {
         this.currentLogLevel = LOG_LEVELS[initialLevel] || LOG_LEVELS.INFO;
     }
-    debug(...args) {
-        if (this.currentLogLevel >= LOG_LEVELS.DEBUG) {
-            console.debug(...args);
+    error(...args) {
+        if (this.currentLogLevel >= LOG_LEVELS.ERROR) {
+            console.error(...args);
         }
     }
     info(...args) {
@@ -39,9 +40,9 @@ class Logger {
             console.info(...args);
         }
     }
-    error(...args) {
-        if (this.currentLogLevel >= LOG_LEVELS.ERROR) {
-            console.error(...args);
+    debug(...args) {
+        if (this.currentLogLevel >= LOG_LEVELS.DEBUG) {
+            console.debug(...args);
         }
     }
 }
@@ -60,12 +61,10 @@ function OLEVOD_setRating() {
     const title = OLEVOD_getTitle();
     getDoubanRating(title)
         .then(data => {
-            logger.info(`getDoubanRating: title=${title} result=${data}`);
-            OLEVOD_setMainRating(data);
+            OLEVOD_setMainRating(data.ratingNums, data.url);
         })
         .catch(err => {
-            logger.error(`getDoubanRating: title=${title} error=${err}`);
-            OLEVOD_setMainRating("N/A");
+            OLEVOD_setMainRating("N/A", DOUBAN_RATING_API + title);
         });
 }
 
@@ -75,15 +74,17 @@ function OLEVOD_getTitle() {
     return title.text().trim();
 }
 
-function OLEVOD_setMainRating(rating) {
+function OLEVOD_setMainRating(ratingNums, url) {
+    const doubanLink = `<a href="${url}" target="_blank">豆瓣评分：${ratingNums}</a>`;
     if (OLEVOD_isDetailPage()) {
         let ratingObj = $('.content_detail .data>.text_muted:first-child');
-        const text = ratingObj.text().trim();
-        ratingObj.text(text + rating);
+        ratingObj.empty();
+        ratingObj.append(doubanLink);
     } else if (OLEVOD_isPlayPage()) {
         let ratingObj = $('.play_text .nstem');
-        const replacedText = ratingObj.html().replace('豆瓣评分：', '豆瓣评分：' + rating);
+        const replacedText = ratingObj.html().replace('豆瓣评分：', '');
         ratingObj.html(replacedText);
+        ratingObj.append(doubanLink);
     }
 }
 
@@ -97,9 +98,9 @@ function OLEVOD_isPlayPage() {
 
 async function getDoubanRating(title) {
     const url = DOUBAN_RATING_API + title;
-    logger.info(`requestDoubanRating: title=${title} url=${url}`);
+    logger.info(`getDoubanRating: title=${title} url=${url}`);
 
-    const ratingNums = await new Promise((resolve, reject) => {
+    const ratingData = await new Promise((resolve, reject) => {
         GM_xmlhttpRequest({
             "method": "GET",
             "url": url,
@@ -109,23 +110,40 @@ async function getDoubanRating(title) {
                     reject(new Error(`StatusError: response status is ${r.status} and message is ${r.statusText}`));
                 } else {
                     try {
-                        let msg = resolveDoubanRatingResult(response);
-                        resolve(msg);
+                        let data = resolveDoubanRatingResult(url, response);
+                        logger.info(`getDoubanRating: title=${title} rating=${data.ratingNums}`);
+                        resolve(data);
                     } catch (error) {
+                        logger.error(`getDoubanRating: title=${title} error=${err}`);
                         reject(error);
                     }
                 }
             }
         });
     });
-    return ratingNums;
+    return ratingData;
 }
 
-function resolveDoubanRatingResult(data) {
+function resolveDoubanRatingResult(searchURL, data) {
     const s = data.find('.result-list .result:first-child');
     if (s.length === 0) {
         throw Error("ResolveError: search result not found");
     }
     const ratingNums = s.find('.rating_nums').text() || '暂无评分';
-    return ratingNums;
+    const doubanLink = s.find('.content .title a').attr('href') || '';
+    const url = resolveDoubanURL(searchURL, doubanLink);
+    const ratingData = {
+        ratingNums,
+        url
+    }
+    return ratingData;
+}
+
+function resolveDoubanURL(searchURL, doubanLink) {
+    try {
+        return (new URL(doubanLink)).searchParams.get('url');
+    } catch (error) {
+        logger.error(`resolveDoubanURL: error=${error.message}`);
+        return searchURL;
+    }
 }
