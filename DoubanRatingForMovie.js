@@ -12,6 +12,8 @@
 // @connect      douban.com
 // @license      GPL-3.0
 // @grant        GM_xmlhttpRequest
+// @grant        GM_setValue
+// @grant        GM_getValue
 // @supportURL   https://github.com/ciphersaw/DoubanRatingForMovie/issues
 // @downloadURL  https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.user.js
 // @updateURL    https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.meta.js
@@ -48,6 +50,7 @@ class Logger {
 }
 
 const logger = new Logger('INFO');
+const TERM_OF_VALID_CACHE = 1;
 const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
 
 (function () {
@@ -58,14 +61,20 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
 })();
 
 function OLEVOD_setRating() {
+    const id = OLEVOD_getID();
     const title = OLEVOD_getTitle();
-    getDoubanRating(title)
+    getDoubanRating(`olevod_${id}`, title)
         .then(data => {
             OLEVOD_setMainRating(data.ratingNums, data.url);
         })
         .catch(err => {
             OLEVOD_setMainRating("N/A", DOUBAN_RATING_API + title);
         });
+}
+
+function OLEVOD_getID() {
+    const id = /id\/(\d+)/.exec(location.href);
+    return id ? id[1] : 0;
 }
 
 function OLEVOD_getTitle() {
@@ -96,9 +105,15 @@ function OLEVOD_isPlayPage() {
     return /.+\/vod\/play\/id\/\d+.*/.test(location.href);
 }
 
-async function getDoubanRating(title) {
+async function getDoubanRating(key, title) {
+    const data = GM_getValue(key);
+    if (data && isValidCache(new Date(data.uptime))) {
+        logger.info(`getDoubanRating: title=${title} rating=${data.ratingData.ratingNums} uptime=${data.uptime}`);
+        return data.ratingData;
+    }
+
     const url = DOUBAN_RATING_API + title;
-    logger.info(`getDoubanRating: title=${title} url=${url}`);
+    logger.info(`getDoubanRating: title=${title} searchURL=${url}`);
 
     const ratingData = await new Promise((resolve, reject) => {
         GM_xmlhttpRequest({
@@ -121,7 +136,25 @@ async function getDoubanRating(title) {
             }
         });
     });
+
+    cacheDoubanRatingData(key, ratingData);
     return ratingData;
+}
+
+function isValidCache(uptime) {
+    const oneDayMillis = 24 * 60 * 60 * 1000;
+    const nowDate = new Date();
+    const diffMillis = nowDate.getTime() - uptime.getTime();
+    return diffMillis < oneDayMillis * TERM_OF_VALID_CACHE;
+}
+
+function cacheDoubanRatingData(key, ratingData) {
+    const uptime = new Date().toISOString();
+    const data = {
+        ratingData,
+        uptime
+    };
+    GM_setValue(key, data);
 }
 
 function resolveDoubanRatingResult(searchURL, data) {
