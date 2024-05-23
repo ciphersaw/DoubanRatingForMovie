@@ -6,7 +6,7 @@
 // @description  Display Douban rating for online movies.
 // @description:zh-CN  在主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
-// @match        *://*.olevod.com/index.php*
+// @match        *://*.olehdtv.com/index.php*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @connect      douban.com
@@ -55,41 +55,41 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
 
 (function () {
     const host = location.hostname;
-    if (host === 'www.olevod.com') {
-        OLEVOD_setRating()
+    if (host === 'www.olehdtv.com') {
+        OLEHDTV_setRating()
     }
 })();
 
-function OLEVOD_setRating() {
-    const id = OLEVOD_getID();
-    const title = OLEVOD_getTitle();
-    getDoubanRating(`olevod_${id}`, title)
+function OLEHDTV_setRating() {
+    const id = OLEHDTV_getID();
+    const title = OLEHDTV_getTitle();
+    getDoubanRating(`olehdtv_${id}`, title)
         .then(data => {
-            OLEVOD_setMainRating(data.ratingNums, data.url);
+            OLEHDTV_setMainRating(data.ratingNums, data.url);
         })
         .catch(err => {
-            OLEVOD_setMainRating("N/A", DOUBAN_RATING_API + title);
+            OLEHDTV_setMainRating("N/A", DOUBAN_RATING_API + title);
         });
 }
 
-function OLEVOD_getID() {
+function OLEHDTV_getID() {
     const id = /id\/(\d+)/.exec(location.href);
     return id ? id[1] : 0;
 }
 
-function OLEVOD_getTitle() {
+function OLEHDTV_getTitle() {
     let title = $('h2.title').clone();
     title.children().remove();
     return title.text().trim().replace(/【.*】$/, ''); // Remove the annotated suffix of title
 }
 
-function OLEVOD_setMainRating(ratingNums, url) {
+function OLEHDTV_setMainRating(ratingNums, url) {
     const doubanLink = `<a href="${url}" target="_blank">豆瓣评分：${ratingNums}</a>`;
-    if (OLEVOD_isDetailPage()) {
+    if (OLEHDTV_isDetailPage()) {
         let ratingObj = $('.content_detail .data>.text_muted:first-child');
         ratingObj.empty();
         ratingObj.append(doubanLink);
-    } else if (OLEVOD_isPlayPage()) {
+    } else if (OLEHDTV_isPlayPage()) {
         let ratingObj = $('.play_text .nstem');
         const replacedText = ratingObj.html().replace('豆瓣评分：', '');
         ratingObj.html(replacedText);
@@ -97,11 +97,11 @@ function OLEVOD_setMainRating(ratingNums, url) {
     }
 }
 
-function OLEVOD_isDetailPage() {
+function OLEHDTV_isDetailPage() {
     return /.+\/vod\/detail\/id\/\d+.*/.test(location.href);
 }
 
-function OLEVOD_isPlayPage() {
+function OLEHDTV_isPlayPage() {
     return /.+\/vod\/play\/id\/\d+.*/.test(location.href);
 }
 
