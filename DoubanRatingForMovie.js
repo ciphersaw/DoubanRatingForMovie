@@ -2,7 +2,7 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.0.1
+// @version      1.0.2
 // @description  Display Douban rating for online movies.
 // @description:zh-CN  在主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
@@ -14,6 +14,8 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_deleteValue
+// @grant        GM_listValues
 // @supportURL   https://github.com/ciphersaw/DoubanRatingForMovie/issues
 // @downloadURL  https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.user.js
 // @updateURL    https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.meta.js
@@ -51,12 +53,14 @@ class Logger {
 
 const logger = new Logger('INFO');
 const TERM_OF_VALID_CACHE = 1;
+const PERIOD_OF_CLEARING_CACHE = 1;
 const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
 
 (function () {
+    clearExpiredCache();
     const host = location.hostname;
     if (host === 'www.olehdtv.com') {
-        OLEHDTV_setRating()
+        OLEHDTV_setRating();
     }
 })();
 
@@ -105,9 +109,25 @@ function OLEHDTV_isPlayPage() {
     return /.+\/vod\/play\/id\/\d+.*/.test(location.href);
 }
 
+function clearExpiredCache() {
+    const t = GM_getValue('clear_time');
+    if (!t || !isValidTime(new Date(t), PERIOD_OF_CLEARING_CACHE)) {
+        logger.info(`clearExpiredCache: clear_time=${t}`);
+        const idList = GM_listValues();
+        idList.forEach(function(id) {
+            // Delete the expired IDs periodically
+            const data = GM_getValue(id);
+            if (data.uptime && !isValidTime(new Date(data.uptime), TERM_OF_VALID_CACHE)) {
+                GM_deleteValue(id);
+            }
+        });
+        GM_setValue('clear_time', new Date().toISOString());
+    }
+}
+
 async function getDoubanRating(key, title) {
     const data = GM_getValue(key);
-    if (data && isValidCache(new Date(data.uptime))) {
+    if (data && isValidTime(new Date(data.uptime), TERM_OF_VALID_CACHE)) {
         logger.info(`getDoubanRating: title=${title} rating=${data.ratingData.ratingNums} uptime=${data.uptime}`);
         return data.ratingData;
     }
@@ -141,11 +161,11 @@ async function getDoubanRating(key, title) {
     return ratingData;
 }
 
-function isValidCache(uptime) {
+function isValidTime(uptime, term) {
     const oneDayMillis = 24 * 60 * 60 * 1000;
     const nowDate = new Date();
     const diffMillis = nowDate.getTime() - uptime.getTime();
-    return diffMillis < oneDayMillis * TERM_OF_VALID_CACHE;
+    return diffMillis < oneDayMillis * term;
 }
 
 function cacheDoubanRatingData(key, ratingData) {
