@@ -9,6 +9,7 @@
 // @match        *://*.olehdtv.com/index.php*
 // @match        *://*.olevod.com/details*
 // @match        *://*.olevod.com/player/vod/*
+// @match        *://v.youku.com/v_show/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @connect      douban.com
@@ -65,6 +66,8 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
         OLEHDTV_setRating();
     } else if (host === 'www.olevod.com') {
         OLEVOD_setRating();
+    } else if (host === 'v.youku.com') {
+        YOUKU_setRating();
     }
 })();
 
@@ -188,9 +191,8 @@ function OLEVOD_setMainRating(ratingNums, url) {
         const originalText = clone.text().trim();
         const array = originalText.split(/ +/);
         if (array.length === 2) {
-            const revisedText = `${array[0]} <a href="${url}" target="_blank" style="color: #798499">豆瓣${ratingNums}</a>/${array[1]}`;
-            const replacedHTML = ratingObj.html().replace(originalText, revisedText);
-            ratingObj.html(replacedHTML);
+            const revisedHTML = `${array[0]} <a href="${url}" target="_blank" style="color: #798499">豆瓣${ratingNums}</a>/${array[1]}`;
+            ratingObj.html(revisedHTML);
         }
 
     }
@@ -202,6 +204,38 @@ function OLEVOD_isDetailPage() {
 
 function OLEVOD_isPlayPage() {
     return /.+\/player\/vod\/\d{1}-\d{5}-\d{1}\.html/.test(location.href);
+}
+
+// ==YOUKU==
+function YOUKU_setRating() {
+    const id = YOUKU_getID();
+    const title = YOUKU_getTitle();
+    getDoubanRating(`youku_${id}`, title)
+        .then(data => {
+            YOUKU_setMainRating(data.ratingNums, data.url);
+        })
+        .catch(err => {
+            YOUKU_setMainRating("N/A", DOUBAN_RATING_API + title);
+        });
+}
+
+function YOUKU_getID() {
+    const id = /id_(\S+).html/.exec(location.href);
+    return id ? id[1] : 0;
+}
+
+function YOUKU_getTitle() {
+    const title = $('h3.new-title-name');
+    return title.text().trim();
+}
+
+function YOUKU_setMainRating(ratingNums, url) {
+    let ratingObj = $('.new-title-name-left span:last-child');
+    const originalText = ratingObj.text().trim();
+    const revisedHTML = `<a href="${url}" target="_blank" style="color: white">豆瓣${ratingNums}</a>·${originalText}`;
+    const revisedAttr = `豆瓣${ratingNums}·${originalText}`;
+    ratingObj.html(revisedHTML);
+    ratingObj.attr('title', revisedAttr);
 }
 
 // ==COMMON==
