@@ -90,9 +90,11 @@ function OLEHDTV_getID() {
 }
 
 function OLEHDTV_getTitle() {
+    // Remove the annotated suffix of title.
+    const suffixRegex = /【.*】$/;
     let clone = $('h2.title').clone();
     clone.children().remove();
-    return clone.text().trim().replace(/【.*】$/, ''); // Remove the annotated suffix of title
+    return clone.text().trim().replace(suffixRegex, '');
 }
 
 function OLEHDTV_setMainRating(ratingNums, url) {
@@ -170,7 +172,8 @@ function OLEVOD_waitForTitle(delay, iterations) {
 }
 
 function OLEVOD_resolveTitle(obj) {
-    const suffixRegex = /【.*】$/; // Remove the annotated suffix of title
+    // Remove the annotated suffix of title.
+    const suffixRegex = /【.*】$/;
     if (OLEVOD_isDetailPage()) {
         return obj.text().trim().replace(suffixRegex, '');
     } else if (OLEVOD_isPlayPage()) {
@@ -182,8 +185,38 @@ function OLEVOD_resolveTitle(obj) {
 
 function OLEVOD_setMainRating(ratingNums, url) {
     if (OLEVOD_isDetailPage()) {
-        let ratingObj = $('.pc-container .info .label:first-child');
+        let ratingObj = OLEVOD_getDetailRatingObj();
         ratingObj.before(`<span class="label"><a href="${url}" target="_blank" style="color: white">豆瓣评分：${ratingNums}</a></span>`);
+
+        // Set MutationObserver for the title element of current page.
+        const titleObj = $('.pc-container .info .title');
+        const originalText = titleObj.text().trim();
+        if (titleObj.length > 0) {
+            const observer = new MutationObserver(observerCallback);
+            observer.observe(titleObj[0], { subtree: true, characterData: true });
+
+            // Stop watching for mutations before page is unloaded.
+            window.onbeforeunload = () => {
+                if (observer) {
+                    observer.disconnect();
+                }
+            };
+
+            function observerCallback(mutations, observer) {
+                mutations.forEach(function (mutation) {
+                    // Check if the character data is changed.
+                    if (mutation.type === 'characterData') {
+                        const changedText = mutation.target.data.trim();
+                        // If the movie page is reloaded by AJAX,
+                        // reset the Douban rating for the new page.
+                        if (originalText !== changedText) {
+                            observer.disconnect();
+                            OLEVOD_setRating();
+                        }
+                    }
+                });
+            }
+        }
     } else if (OLEVOD_isPlayPage()) {
         let ratingObj = $('#pane-first .tab-label .wes');
         const clone = ratingObj.clone();
@@ -196,6 +229,17 @@ function OLEVOD_setMainRating(ratingNums, url) {
         }
 
     }
+}
+
+function OLEVOD_getDetailRatingObj() {
+    let ratingObj = $('.pc-container .info .label:first-child');
+    // If the first child is Douban rating element for the last page,
+    // then remove it and relocate the first child.
+    if (/豆瓣/.test(ratingObj.text().trim())) {
+        ratingObj.remove();
+        ratingObj = $('.pc-container .info .label:first-child');
+    }
+    return ratingObj;
 }
 
 function OLEVOD_isDetailPage() {
@@ -245,7 +289,7 @@ function clearExpiredCache() {
         logger.info(`clearExpiredCache: clear_time=${t}`);
         const idList = GM_listValues();
         idList.forEach(function (id) {
-            // Delete the expired IDs periodically
+            // Delete the expired IDs periodically.
             const data = GM_getValue(id);
             if (data.uptime && !isValidTime(new Date(data.uptime), TERM_OF_VALID_CACHE)) {
                 GM_deleteValue(id);
