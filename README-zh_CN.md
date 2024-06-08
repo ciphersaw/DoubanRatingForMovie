@@ -36,6 +36,12 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 
 ![olevod-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olevod-play-page.png)
 
+### [爱奇艺](https://www.iqiyi.com/)
+
+在电影播放页面展示豆瓣评分：
+
+![iqiyi-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iqiyi-play-page.png)
+
 ### [优酷](https://youku.com/)
 
 在电影播放页面展示豆瓣评分：
@@ -45,5 +51,3 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 ## 待支持
 
 ### [腾讯视频](https://v.qq.com/)
-
-### [爱奇艺](https://www.iqiyi.com/)

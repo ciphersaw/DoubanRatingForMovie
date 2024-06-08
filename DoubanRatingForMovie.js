@@ -9,6 +9,7 @@
 // @match        *://*.olehdtv.com/index.php*
 // @match        *://*.olevod.com/details*
 // @match        *://*.olevod.com/player/vod/*
+// @match        *://www.iqiyi.com/v_*
 // @match        *://v.youku.com/v_show/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -66,6 +67,8 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
         OLEHDTV_setRating();
     } else if (host === 'www.olevod.com') {
         OLEVOD_setRating();
+    } else if (host === 'www.iqiyi.com') {
+        IQIYI_setRating();
     } else if (host === 'v.youku.com') {
         YOUKU_setRating();
     }
@@ -160,7 +163,7 @@ function OLEVOD_waitForTitle(delay, iterations) {
                 reject(error);
             }
             const obj = $(selector);
-            if (obj) {
+            if (obj.length > 0) {
                 const title = OLEVOD_resolveTitle(obj);
                 if (title !== "") {
                     clearInterval(intervalID);
@@ -248,6 +251,75 @@ function OLEVOD_isDetailPage() {
 
 function OLEVOD_isPlayPage() {
     return /.+\/player\/vod\/\d{1}-\d{5}-\d{1}\.html/.test(location.href);
+}
+
+// ==IQIYI==
+async function IQIYI_setRating() {
+    const id = IQIYI_getID();
+    let title = '';
+    try {
+        title = await IQIYI_waitForTitle(1000, 10);
+    } catch (error) {
+        logger.error(`IQIYI_waitForTitle: id=${id} error=${error}`);
+        return;
+    }
+    getDoubanRating(`iqiyi_${id}`, title)
+        .then(data => {
+            IQIYI_setMainRating(data.ratingNums, data.url);
+        })
+        .catch(err => {
+            IQIYI_setMainRating("N/A", DOUBAN_RATING_API + title);
+        });
+}
+
+function IQIYI_getID() {
+    const id = /v_(\S+).html/.exec(location.href);
+    return id ? id[1] : 0;
+}
+
+function IQIYI_waitForTitle(delay, iterations) {
+    const selector = '.meta_title__IXJ03';
+    return new Promise((resolve, reject) => {
+        let count = 0;
+        const intervalID = setInterval(() => {
+            count++;
+            if (count === iterations) {
+                const error = new Error(`ResolveError: title is not found and iterations have reached the maximum`);
+                clearInterval(intervalID);
+                reject(error);
+            }
+            const obj = $(selector);
+            if (obj.length > 0) {
+                const title = obj.text().trim();
+                if (title !== "") {
+                    clearInterval(intervalID);
+                    resolve(title);
+                }
+            }
+        }, delay);
+    });
+}
+
+function IQIYI_setMainRating(ratingNums, url) {
+    let count = 0;
+    const intervalID = setInterval(() => {
+        const obj = $('#doubanRating');
+        if (obj.length === 0) {
+            count = 0;
+            // Set the align-items to center, for the parent div element with flex layout.
+            let flexObj = $('.meta_titleContent__cUi2t');
+            flexObj.css("align-items", "center");
+            // Insert rating div element after title div element.
+            let ratingObj = $('.meta_title__IXJ03');
+            ratingObj.after(`<div id="doubanRating" style="margin-left:6px"><a href="${url}" target="_blank" style="color:#f939; font-family:IQYHT-Medium; align-items:center">豆瓣${ratingNums}</a></div>`);
+        } else {
+            count++;
+        }
+        // If rating div element is not overwritten and removed in 10s, then clear interval.
+        if (count === 10) {
+            clearInterval(intervalID);
+        }
+    }, 1000);
 }
 
 // ==YOUKU==
