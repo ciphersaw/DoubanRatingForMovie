@@ -36,6 +36,12 @@ Display Douban rating in movie play page:
 
 ![olevod-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olevod-play-page.png)
 
+### [Tencent Video](https://v.qq.com/)
+
+Display Douban rating in movie play page:
+
+![vqq-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/vqq-play-page.png)
+
 ### [iQIYI](https://www.iqiyi.com/)
 
 Display Douban rating in movie play page:
@@ -47,7 +53,3 @@ Display Douban rating in movie play page:
 Display Douban rating in movie play page:
 
 ![youku-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page.png)
-
-## TODO
-
-### [Tencent Video](https://v.qq.com/)

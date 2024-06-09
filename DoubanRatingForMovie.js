@@ -2,13 +2,14 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.0.3
+// @version      1.1.0
 // @description  Display Douban rating for online movies.
 // @description:zh-CN  在主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
 // @match        *://*.olehdtv.com/index.php*
 // @match        *://*.olevod.com/details*
 // @match        *://*.olevod.com/player/vod/*
+// @match        *://v.qq.com/x/cover/*
 // @match        *://www.iqiyi.com/v_*
 // @match        *://v.youku.com/v_show/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
@@ -67,6 +68,8 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
         OLEHDTV_setRating();
     } else if (host === 'www.olevod.com') {
         OLEVOD_setRating();
+    } else if (host === 'v.qq.com') {
+        VQQ_setRating();
     } else if (host === 'www.iqiyi.com') {
         IQIYI_setRating();
     } else if (host === 'v.youku.com') {
@@ -189,7 +192,7 @@ function OLEVOD_resolveTitle(obj) {
 function OLEVOD_setMainRating(ratingNums, url) {
     if (OLEVOD_isDetailPage()) {
         let ratingObj = OLEVOD_getDetailRatingObj();
-        ratingObj.before(`<span class="label"><a href="${url}" target="_blank" style="color: white">豆瓣评分：${ratingNums}</a></span>`);
+        ratingObj.before(`<span class="label"><a href="${url}" target="_blank" style="color:white">豆瓣评分：${ratingNums}</a></span>`);
 
         // Set MutationObserver for the title element of current page.
         const titleObj = $('.pc-container .info .title');
@@ -227,7 +230,7 @@ function OLEVOD_setMainRating(ratingNums, url) {
         const originalText = clone.text().trim();
         const array = originalText.split(/ +/);
         if (array.length === 2) {
-            const revisedHTML = `${array[0]} <a href="${url}" target="_blank" style="color: #798499">豆瓣${ratingNums}</a>/${array[1]}`;
+            const revisedHTML = `${array[0]} <a href="${url}" target="_blank" style="color:#798499">豆瓣${ratingNums}</a>/${array[1]}`;
             ratingObj.html(revisedHTML);
         }
 
@@ -251,6 +254,36 @@ function OLEVOD_isDetailPage() {
 
 function OLEVOD_isPlayPage() {
     return /.+\/player\/vod\/\d{1}-\d{5}-\d{1}\.html/.test(location.href);
+}
+
+// ==VQQ==
+function VQQ_setRating() {
+    const id = VQQ_getID();
+    const title = VQQ_getTitle();
+    getDoubanRating(`vqq_${id}`, title)
+        .then(data => {
+            VQQ_setMainRating(data.ratingNums, data.url);
+        })
+        .catch(err => {
+            VQQ_setMainRating("N/A", DOUBAN_RATING_API + title);
+        });
+}
+
+function VQQ_getID() {
+    const id = /x\/cover\/(\S+)\//.exec(location.href);
+    return id ? id[1] : 0;
+}
+
+function VQQ_getTitle () {
+    // Remove the annotated suffix of title.
+    const suffixRegex = /\[.*\]$/;
+    const title = $('span.playlist-intro__title');
+    return title.text().trim().replace(suffixRegex, '');
+}
+
+function VQQ_setMainRating(ratingNums, url) {
+    let ratingObj = $('span.playlist-intro__title');
+    ratingObj.after(`<a href="${url}" target="_blank" style="vertical-align:middle; margin-right:6px; color:rgba(255,255,255,0.600)">豆瓣${ratingNums}</a>`);
 }
 
 // ==IQIYI==
@@ -311,7 +344,7 @@ function IQIYI_setMainRating(ratingNums, url) {
             flexObj.css("align-items", "center");
             // Insert rating div element after title div element.
             let ratingObj = $('.meta_title__IXJ03');
-            ratingObj.after(`<div id="doubanRating" style="margin-left:6px"><a href="${url}" target="_blank" style="color:#f939; font-family:IQYHT-Medium; align-items:center">豆瓣${ratingNums}</a></div>`);
+            ratingObj.after(`<div id="doubanRating" style="margin-left:6px"><a href="${url}" target="_blank" style="color:#f939; font-family:IQYHT-Medium">豆瓣${ratingNums}</a></div>`);
         } else {
             count++;
         }
@@ -348,7 +381,7 @@ function YOUKU_getTitle() {
 function YOUKU_setMainRating(ratingNums, url) {
     let ratingObj = $('.new-title-name-left span:last-child');
     const originalText = ratingObj.text().trim();
-    const revisedHTML = `<a href="${url}" target="_blank" style="color: white">豆瓣${ratingNums}</a>·${originalText}`;
+    const revisedHTML = `<a href="${url}" target="_blank" style="color:white">豆瓣${ratingNums}</a>·${originalText}`;
     const revisedAttr = `豆瓣${ratingNums}·${originalText}`;
     ratingObj.html(revisedHTML);
     ratingObj.attr('title', revisedAttr);
