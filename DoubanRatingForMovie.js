@@ -191,7 +191,7 @@ function OLEVOD_resolveTitle(obj) {
 
 function OLEVOD_setMainRating(ratingNums, url) {
     if (OLEVOD_isDetailPage()) {
-        let ratingObj = OLEVOD_getDetailRatingObj();
+        let ratingObj = $('.pc-container .info .label:first-child');
         ratingObj.before(`<span class="label"><a href="${url}" target="_blank" style="color:white">豆瓣评分：${ratingNums}</a></span>`);
 
         // Set MutationObserver for the title element of current page.
@@ -214,8 +214,12 @@ function OLEVOD_setMainRating(ratingNums, url) {
                     if (mutation.type === 'characterData') {
                         const changedText = mutation.target.data.trim();
                         // If the movie page is reloaded by AJAX,
-                        // reset the Douban rating for the new page.
+                        // remove the Douban rating of current page and reset for the new page.
                         if (originalText !== changedText) {
+                            let ratingObj = $('.pc-container .info .label:first-child');
+                            if (/豆瓣/.test(ratingObj.text().trim())) {
+                                ratingObj.remove();
+                            }
                             observer.disconnect();
                             OLEVOD_setRating();
                         }
@@ -235,17 +239,6 @@ function OLEVOD_setMainRating(ratingNums, url) {
         }
 
     }
-}
-
-function OLEVOD_getDetailRatingObj() {
-    let ratingObj = $('.pc-container .info .label:first-child');
-    // If the first child is Douban rating element for the last page,
-    // then remove it and relocate the first child.
-    if (/豆瓣/.test(ratingObj.text().trim())) {
-        ratingObj.remove();
-        ratingObj = $('.pc-container .info .label:first-child');
-    }
-    return ratingObj;
 }
 
 function OLEVOD_isDetailPage() {
@@ -274,7 +267,7 @@ function VQQ_getID() {
     return id ? id[1] : 0;
 }
 
-function VQQ_getTitle () {
+function VQQ_getTitle() {
     // Remove the annotated suffix of title.
     const suffixRegex = /\[.*\]$/;
     const title = $('span.playlist-intro__title');
