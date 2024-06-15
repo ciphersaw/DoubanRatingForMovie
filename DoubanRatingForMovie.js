@@ -9,6 +9,8 @@
 // @match        *://*.olehdtv.com/index.php*
 // @match        *://*.olevod.com/details*
 // @match        *://*.olevod.com/player/vod/*
+// @match        *://*.olevod.tv/details*
+// @match        *://*.olevod.tv/player/vod/*
 // @match        *://v.qq.com/x/cover/*
 // @match        *://www.iqiyi.com/v_*
 // @match        *://v.youku.com/v_show/*
@@ -66,7 +68,8 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
     const host = location.hostname;
     if (host === 'www.olehdtv.com') {
         OLEHDTV_setRating();
-    } else if (host === 'www.olevod.com') {
+    } else if (host === 'www.olevod.com' || host === 'www.olevod.tv') {
+        // Both main site and test site.
         OLEVOD_setRating();
     } else if (host === 'v.qq.com') {
         VQQ_setRating();
