@@ -89,7 +89,7 @@ function OLEHDTV_setRating() {
             OLEHDTV_setMainRating(data.ratingNums, data.url);
         })
         .catch(err => {
-            OLEHDTV_setMainRating("N/A", DOUBAN_RATING_API + title);
+            OLEHDTV_setMainRating("N/A", DOUBAN_RATING_API + encodeSpaces(title));
         });
 }
 
@@ -143,7 +143,7 @@ async function OLEVOD_setRating() {
             OLEVOD_setMainRating(data.ratingNums, data.url);
         })
         .catch(err => {
-            OLEVOD_setMainRating("N/A", DOUBAN_RATING_API + title);
+            OLEVOD_setMainRating("N/A", DOUBAN_RATING_API + encodeSpaces(title));
         });
 }
 
@@ -261,7 +261,7 @@ function VQQ_setRating() {
             VQQ_setMainRating(data.ratingNums, data.url);
         })
         .catch(err => {
-            VQQ_setMainRating("N/A", DOUBAN_RATING_API + title);
+            VQQ_setMainRating("N/A", DOUBAN_RATING_API + encodeSpaces(title));
         });
 }
 
@@ -297,7 +297,7 @@ async function IQIYI_setRating() {
             IQIYI_setMainRating(data.ratingNums, data.url);
         })
         .catch(err => {
-            IQIYI_setMainRating("N/A", DOUBAN_RATING_API + title);
+            IQIYI_setMainRating("N/A", DOUBAN_RATING_API + encodeSpaces(title));
         });
 }
 
@@ -360,7 +360,7 @@ function YOUKU_setRating() {
             YOUKU_setMainRating(data.ratingNums, data.url);
         })
         .catch(err => {
-            YOUKU_setMainRating("N/A", DOUBAN_RATING_API + title);
+            YOUKU_setMainRating("N/A", DOUBAN_RATING_API + encodeSpaces(title));
         });
 }
 
@@ -407,7 +407,7 @@ async function getDoubanRating(key, title) {
         return data.ratingData;
     }
 
-    const url = DOUBAN_RATING_API + title;
+    const url = DOUBAN_RATING_API + encodeSpaces(title);
     logger.info(`getDoubanRating: title=${title} searchURL=${url}`);
 
     const ratingData = await new Promise((resolve, reject) => {
@@ -475,4 +475,8 @@ function resolveDoubanURL(searchURL, doubanLink) {
         logger.error(`resolveDoubanURL: error=${error.message}`);
         return searchURL;
     }
+}
+
+function encodeSpaces(text) {
+    return text.replace(/ /g, '%20');
 }
