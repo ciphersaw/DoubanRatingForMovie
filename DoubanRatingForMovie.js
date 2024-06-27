@@ -2,7 +2,7 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.1.0
+// @version      1.2.0
 // @description  Display Douban rating for online movies.
 // @description:zh-CN  在主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
@@ -84,7 +84,9 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
 function OLEHDTV_setRating() {
     const id = OLEHDTV_getID();
     const title = OLEHDTV_getTitle();
-    getDoubanRating(`olehdtv_${id}`, title)
+    const director = OLEHDTV_getDirector();
+    const year = OLEHDTV_getYear();
+    getDoubanRating(`olehdtv_${id}`, title, director, year)
         .then(data => {
             OLEHDTV_setMainRating(data.ratingNums, data.url);
         })
@@ -104,6 +106,35 @@ function OLEHDTV_getTitle() {
     let clone = $('h2.title').clone();
     clone.children().remove();
     return clone.text().trim().replace(suffixRegex, '');
+}
+
+function OLEHDTV_getDirector() {
+    let selector = '';
+    if (OLEHDTV_isDetailPage()) {
+        selector = '.content_min li.data:last';
+    } else if (OLEHDTV_isPlayPage()) {
+        selector = '.play_content p:first-child';
+    }
+    const directorText = $(selector).text().trim();
+    const directors = /^导演：(.+)$/.exec(directorText);
+    if (directors) {
+        const array = directors[1].split(/\s+/);
+        return array[0];
+    } else {
+        return '';
+    }
+}
+
+function OLEHDTV_getYear() {
+    let selector = '';
+    if (OLEHDTV_isDetailPage()) {
+        selector = 'ul li.data:first-child';
+    } else if (OLEHDTV_isPlayPage()) {
+        selector = '.play_text a';
+    }
+    const yearText = $(selector).text().trim();
+    const year = /\d{4}/.exec(yearText);
+    return year ? year[0] : '';
 }
 
 function OLEHDTV_setMainRating(ratingNums, url) {
@@ -138,7 +169,11 @@ async function OLEVOD_setRating() {
         logger.error(`OLEVOD_waitForTitle: id=${id} error=${error}`);
         return;
     }
-    getDoubanRating(`olevod_${id}`, title)
+    // Note that director and year must be selected after OLEVOD_waitForTitle,
+    // which means elements have been already loaded and do not need to wait again.
+    const director = OLEVOD_getDirector();
+    const year = OLEVOD_getYear();
+    getDoubanRating(`olevod_${id}`, title, director, year)
         .then(data => {
             OLEVOD_setMainRating(data.ratingNums, data.url);
         })
@@ -190,6 +225,34 @@ function OLEVOD_resolveTitle(obj) {
         clone.children().remove();
         return clone.text().trim().replace(suffixRegex, '');
     }
+}
+
+function OLEVOD_getDirector() {
+    if (OLEVOD_isDetailPage()) {
+        const directorText = $('.pc-container .info p:nth-of-type(2)').text().trim();
+        const directors = /^导演：(.+)$/.exec(directorText);
+        if (directors) {
+            const array = directors[1].split(/\s*\/\s*/);
+            return array[0];
+        } else {
+            return '';
+        }
+    } else if (OLEVOD_isPlayPage()) {
+        // Director is not found in the movie play page.
+        return '';
+    }
+}
+
+function OLEVOD_getYear() {
+    let selector = '';
+    if (OLEVOD_isDetailPage()) {
+        selector = '.pc-container .info .label';
+    } else if (OLEVOD_isPlayPage()) {
+        selector = '.el-tabs__content .tab-label p.wes';
+    }
+    const yearText = $(selector).text().trim();
+    const year = /\d{4}/.exec(yearText);
+    return year ? year[0] : '';
 }
 
 function OLEVOD_setMainRating(ratingNums, url) {
@@ -256,7 +319,10 @@ function OLEVOD_isPlayPage() {
 function VQQ_setRating() {
     const id = VQQ_getID();
     const title = VQQ_getTitle();
-    getDoubanRating(`vqq_${id}`, title)
+    // It is hard to get director in VQQ, so set them to null temporarily.
+    const director = '';
+    const year = VQQ_getYear();
+    getDoubanRating(`vqq_${id}`, title, director, year)
         .then(data => {
             VQQ_setMainRating(data.ratingNums, data.url);
         })
@@ -277,6 +343,12 @@ function VQQ_getTitle() {
     return title.text().trim().replace(suffixRegex, '');
 }
 
+function VQQ_getYear() {
+    const yearText = $('span.playlist-intro-info__item').text();
+    const year = /\S*· (\d{4}) ·\S*/.exec(yearText);
+    return year ? year[1] : '';
+}
+
 function VQQ_setMainRating(ratingNums, url) {
     let ratingObj = $('span.playlist-intro__title');
     ratingObj.after(`<a href="${url}" target="_blank" style="vertical-align:middle; margin-right:6px; color:rgba(255,255,255,0.600)">豆瓣${ratingNums}</a>`);
@@ -292,7 +364,10 @@ async function IQIYI_setRating() {
         logger.error(`IQIYI_waitForTitle: id=${id} error=${error}`);
         return;
     }
-    getDoubanRating(`iqiyi_${id}`, title)
+    // It is hard to get director and year in IQIYI, so set them to null temporarily.
+    const director = '';
+    const year = '';
+    getDoubanRating(`iqiyi_${id}`, title, director, year)
         .then(data => {
             IQIYI_setMainRating(data.ratingNums, data.url);
         })
@@ -352,10 +427,18 @@ function IQIYI_setMainRating(ratingNums, url) {
 }
 
 // ==YOUKU==
-function YOUKU_setRating() {
+async function YOUKU_setRating() {
     const id = YOUKU_getID();
     const title = YOUKU_getTitle();
-    getDoubanRating(`youku_${id}`, title)
+    let director = '';
+    try {
+        director = await YOUKU_waitForDirector(1000, 10);
+    } catch (error) {
+        logger.error(`YOUKU_waitForDirector: id=${id} error=${error}`);
+        return;
+    }
+    const year = YOUKU_getYear();
+    getDoubanRating(`youku_${id}`, title, director, year)
         .then(data => {
             YOUKU_setMainRating(data.ratingNums, data.url);
         })
@@ -372,6 +455,35 @@ function YOUKU_getID() {
 function YOUKU_getTitle() {
     const title = $('h3.new-title-name');
     return title.text().trim();
+}
+
+function YOUKU_waitForDirector(delay, iterations) {
+    const selector = '.starBox .star .starName:first';
+    return new Promise((resolve, reject) => {
+        let count = 0;
+        const intervalID = setInterval(() => {
+            count++;
+            if (count === iterations) {
+                const error = new Error(`ResolveError: title is not found and iterations have reached the maximum`);
+                clearInterval(intervalID);
+                reject(error);
+            }
+            const obj = $(selector);
+            if (obj.length > 0) {
+                const director = obj.text().trim();
+                if (director !== "") {
+                    clearInterval(intervalID);
+                    resolve(director);
+                }
+            }
+        }, delay);
+    });
+}
+
+function YOUKU_getYear() {
+    const yearText = $('.new-title-name-left span:last-child').text();
+    const year = /\S*·(\d{4})·\S*/.exec(yearText);
+    return year ? year[1] : '';
 }
 
 function YOUKU_setMainRating(ratingNums, url) {
@@ -400,7 +512,7 @@ function clearExpiredCache() {
     }
 }
 
-async function getDoubanRating(key, title) {
+async function getDoubanRating(key, title, director, year) {
     const data = GM_getValue(key);
     if (data && isValidTime(new Date(data.uptime), TERM_OF_VALID_CACHE)) {
         logger.info(`getDoubanRating: title=${title} rating=${data.ratingData.ratingNums} uptime=${data.uptime}`);
@@ -421,7 +533,7 @@ async function getDoubanRating(key, title) {
                     reject(error);
                 } else {
                     try {
-                        let data = resolveDoubanRatingResult(url, response);
+                        let data = resolveDoubanRatingResult(url, director, year, response);
                         logger.info(`getDoubanRating: title=${title} rating=${data.ratingNums}`);
                         resolve(data);
                     } catch (error) {
@@ -453,14 +565,17 @@ function cacheDoubanRatingData(key, ratingData) {
     GM_setValue(key, data);
 }
 
-function resolveDoubanRatingResult(searchURL, data) {
-    const s = data.find('.result-list .result:first-child');
-    if (s.length === 0) {
+function resolveDoubanRatingResult(searchURL, director, year, data) {
+    const s = getDoubanRatingItem(director, year, data);
+    if (s === null) {
         throw Error("ResolveError: search result is not found");
     }
     const ratingNums = s.find('.rating_nums').text() || '暂无评分';
     const doubanLink = s.find('.content .title a').attr('href') || '';
-    const url = resolveDoubanURL(searchURL, doubanLink);
+    let url = resolveDoubanURL(doubanLink);
+    if (url === "") {
+        url = searchURL;
+    }
     const ratingData = {
         ratingNums,
         url
@@ -468,12 +583,44 @@ function resolveDoubanRatingResult(searchURL, data) {
     return ratingData;
 }
 
-function resolveDoubanURL(searchURL, doubanLink) {
+function getDoubanRatingItem(director, year, data) {
+    let item = null;
+    if (director === '' && year === '') {
+        item = data.find('.result-list .result:first-child');
+    } else {
+        const list = data.find('.result-list').children();
+        list.each(function () {
+            const info = $(this).find('.subject-cast').text();
+            const array = info.split(/\s*\/\s*/); // e.g. ['原名:毕业那年', '姚宇', '顾莉雅', '2012']
+            if (array.length > 0 && array[0].includes('原名')) {
+                array.shift();
+            }
+            let releaseYear = null;
+            if (/^\d{4}$/.test(array[array.length - 1])) {
+                releaseYear = array.pop();
+            }
+            if (director !== '' && array.indexOf(director) === -1) {
+                return true;
+            }
+            if (year !== '' && releaseYear !== year) {
+                return true;
+            }
+            item = $(this);
+            return false;
+        });
+        if (item === null) {
+            item = data.find('.result-list .result:first-child');
+        }
+    }
+    return item;
+}
+
+function resolveDoubanURL(doubanLink) {
     try {
         return (new URL(doubanLink)).searchParams.get('url');
     } catch (error) {
         logger.error(`resolveDoubanURL: error=${error.message}`);
-        return searchURL;
+        return "";
     }
 }
 
