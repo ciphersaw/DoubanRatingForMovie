@@ -382,7 +382,7 @@ function IQIYI_getID() {
 }
 
 function IQIYI_waitForTitle(delay, iterations) {
-    const selector = '.meta_title__IXJ03';
+    const selector = '.meta_titleNotCloud__O2Ffr';
     return new Promise((resolve, reject) => {
         let count = 0;
         const intervalID = setInterval(() => {
@@ -414,7 +414,7 @@ function IQIYI_setMainRating(ratingNums, url) {
             let flexObj = $('.meta_titleContent__cUi2t');
             flexObj.css("align-items", "center");
             // Insert rating div element after title div element.
-            let ratingObj = $('.meta_title__IXJ03');
+            let ratingObj = $('.meta_titleNotCloud__O2Ffr');
             ratingObj.after(`<div id="doubanRating" style="margin-left:6px"><a href="${url}" target="_blank" style="color:#f939; font-family:IQYHT-Medium">豆瓣${ratingNums}</a></div>`);
         } else {
             count++;
