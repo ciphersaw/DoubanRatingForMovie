@@ -20,21 +20,21 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 
 在电影详情页面展示豆瓣评分：
 
-![olehdtv-detail-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-detail-page.png)
-
-在电影播放页面展示豆瓣评分：
-
-![olehdtv-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-play-page.png)
-
-### [欧乐影院（旧版）](https://www.olehdtv.com/)
-
-在电影详情页面展示豆瓣评分：
-
 ![olevod-detail-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olevod-detail-page.png)
 
 在电影播放页面展示豆瓣评分：
 
 ![olevod-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olevod-play-page.png)
+
+### [欧乐影院（旧版）](https://www.olehdtv.com/)
+
+在电影详情页面展示豆瓣评分：
+
+![olehdtv-detail-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-detail-page.png)
+
+在电影播放页面展示豆瓣评分：
+
+![olehdtv-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-play-page.png)
 
 ### [腾讯视频](https://v.qq.com/)
 

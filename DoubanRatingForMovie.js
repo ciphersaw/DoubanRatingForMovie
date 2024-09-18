@@ -2,7 +2,7 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.2.0
+// @version      1.2.1
 // @description  Display Douban rating for online movies.
 // @description:zh-CN  在主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
@@ -183,7 +183,7 @@ async function OLEVOD_setRating() {
 }
 
 function OLEVOD_getID() {
-    const id = /\d{1}-\d{5}/.exec(location.href);
+    const id = /\d{1}-\d{4,5}/.exec(location.href);
     return id ? id[0] : 0;
 }
 
@@ -308,11 +308,11 @@ function OLEVOD_setMainRating(ratingNums, url) {
 }
 
 function OLEVOD_isDetailPage() {
-    return /.+\/details-\d{1}-\d{5}\.html/.test(location.href);
+    return /.+\/details-\d{1}-\d{4,5}\.html/.test(location.href);
 }
 
 function OLEVOD_isPlayPage() {
-    return /.+\/player\/vod\/\d{1}-\d{5}-\d{1}\.html/.test(location.href);
+    return /.+\/player\/vod\/\d{1}-\d{4,5}-\d{1}\.html/.test(location.href);
 }
 
 // ==VQQ==
