@@ -16,6 +16,24 @@ DoubanRatingForMovie is a userscript based on [Tampermonkey](https://www.tamperm
 
 ## Supported
 
+### [Tencent Video](https://v.qq.com/)
+
+Display Douban rating in movie play page:
+
+![vqq-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/vqq-play-page.png)
+
+### [iQIYI](https://www.iqiyi.com/)
+
+Display Douban rating in movie play page:
+
+![iqiyi-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iqiyi-play-page.png)
+
+### [Youku](https://youku.com/)
+
+Display Douban rating in movie play page:
+
+![youku-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page.png)
+
 ### [Olevod (New Version)](https://www.olevod.com/)
 
 Display Douban rating in movie detail page:
@@ -35,21 +53,3 @@ Display Douban rating in movie detail page:
 Display Douban rating in movie play page:
 
 ![olehdtv-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-play-page.png)
-
-### [Tencent Video](https://v.qq.com/)
-
-Display Douban rating in movie play page:
-
-![vqq-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/vqq-play-page.png)
-
-### [iQIYI](https://www.iqiyi.com/)
-
-Display Douban rating in movie play page:
-
-![iqiyi-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iqiyi-play-page.png)
-
-### [Youku](https://youku.com/)
-
-Display Douban rating in movie play page:
-
-![youku-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page.png)

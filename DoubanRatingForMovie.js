@@ -3,8 +3,8 @@
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
 // @version      1.2.2
-// @description  Display Douban rating for online movies.
-// @description:zh-CN  在主流电影网站上显示豆瓣评分。
+// @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku and so on.
+// @description:zh-CN  在腾讯视频、爱奇艺、优酷等主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
 // @match        *://*.olehdtv.com/index.php*
 // @match        *://*.olevod.com/details*
