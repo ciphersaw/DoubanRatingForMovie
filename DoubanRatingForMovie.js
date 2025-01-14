@@ -2,7 +2,7 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.2.1
+// @version      1.2.2
 // @description  Display Douban rating for online movies.
 // @description:zh-CN  在主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
@@ -339,7 +339,7 @@ function VQQ_getID() {
 function VQQ_getTitle() {
     // Remove the annotated suffix of title.
     const suffixRegex = /\[.*\]$/;
-    const title = $('span.playlist-intro__title');
+    const title = $('h1.playlist-intro__title');
     return title.text().trim().replace(suffixRegex, '');
 }
 
@@ -350,7 +350,7 @@ function VQQ_getYear() {
 }
 
 function VQQ_setMainRating(ratingNums, url) {
-    let ratingObj = $('span.playlist-intro__title');
+    let ratingObj = $('h1.playlist-intro__title');
     ratingObj.after(`<a href="${url}" target="_blank" style="vertical-align:middle; margin-right:6px; color:rgba(255,255,255,0.600)">豆瓣${ratingNums}</a>`);
 }
 
