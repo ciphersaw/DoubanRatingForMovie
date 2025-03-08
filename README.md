@@ -32,7 +32,7 @@ Display Douban rating in movie play page:
 
 Display Douban rating in movie play page:
 
-![youku-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page.png)
+![youku-play-page-v2](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page-v2.png)
 
 ### [Olevod (New Version)](https://www.olevod.com/)
 

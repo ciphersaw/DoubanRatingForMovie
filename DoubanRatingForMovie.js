@@ -2,7 +2,7 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.2.2
+// @version      1.2.3
 // @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku and so on.
 // @description:zh-CN  在腾讯视频、爱奇艺、优酷等主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
@@ -13,7 +13,7 @@
 // @match        *://*.olevod.tv/player/vod/*
 // @match        *://v.qq.com/x/cover/*
 // @match        *://www.iqiyi.com/v_*
-// @match        *://v.youku.com/v_show/*
+// @match        *://v.youku.com/video*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @connect      douban.com
@@ -430,14 +430,9 @@ function IQIYI_setMainRating(ratingNums, url) {
 async function YOUKU_setRating() {
     const id = YOUKU_getID();
     const title = YOUKU_getTitle();
-    let director = '';
-    try {
-        director = await YOUKU_waitForDirector(1000, 10);
-    } catch (error) {
-        logger.error(`YOUKU_waitForDirector: id=${id} error=${error}`);
-        return;
-    }
-    const year = YOUKU_getYear();
+    // It is hard to get director and year in YOUKU, so set them to null temporarily.
+    const director = '';
+    const year = '';
     getDoubanRating(`youku_${id}`, title, director, year)
         .then(data => {
             YOUKU_setMainRating(data.ratingNums, data.url);
@@ -448,51 +443,18 @@ async function YOUKU_setRating() {
 }
 
 function YOUKU_getID() {
-    const id = /id_(\S+).html/.exec(location.href);
+    const id = /s=([\w\d]+)/.exec(location.href);
     return id ? id[1] : 0;
 }
 
 function YOUKU_getTitle() {
-    const title = $('h3.new-title-name');
+    const title = $('.title');
     return title.text().trim();
 }
 
-function YOUKU_waitForDirector(delay, iterations) {
-    const selector = '.starBox .star .starName:first';
-    return new Promise((resolve, reject) => {
-        let count = 0;
-        const intervalID = setInterval(() => {
-            count++;
-            if (count === iterations) {
-                const error = new Error(`ResolveError: title is not found and iterations have reached the maximum`);
-                clearInterval(intervalID);
-                reject(error);
-            }
-            const obj = $(selector);
-            if (obj.length > 0) {
-                const director = obj.text().trim();
-                if (director !== "") {
-                    clearInterval(intervalID);
-                    resolve(director);
-                }
-            }
-        }, delay);
-    });
-}
-
-function YOUKU_getYear() {
-    const yearText = $('.new-title-name-left span:last-child').text();
-    const year = /\S*·(\d{4})·\S*/.exec(yearText);
-    return year ? year[1] : '';
-}
-
 function YOUKU_setMainRating(ratingNums, url) {
-    let ratingObj = $('.new-title-name-left span:last-child');
-    const originalText = ratingObj.text().trim();
-    const revisedHTML = `<a href="${url}" target="_blank" style="color:white">豆瓣${ratingNums}</a>·${originalText}`;
-    const revisedAttr = `豆瓣${ratingNums}·${originalText}`;
-    ratingObj.html(revisedHTML);
-    ratingObj.attr('title', revisedAttr);
+    let ratingObj = $('div.title');
+    ratingObj.after(`<a href="${url}" target="_blank" style="vertical-align:middle; margin-left:12px; color:rgba(255,255,255,0.400)">豆瓣${ratingNums}</a>`);
 }
 
 // ==COMMON==

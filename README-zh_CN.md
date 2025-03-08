@@ -32,7 +32,7 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 
 在电影播放页面展示豆瓣评分：
 
-![youku-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page.png)
+![youku-play-page-v2](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page-v2.png)
 
 ### [欧乐影院（新版）](https://www.olevod.com/)
 
