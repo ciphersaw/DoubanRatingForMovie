@@ -34,6 +34,12 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 
 ![youku-play-page-v2](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page-v2.png)
 
+### [哔哩哔哩](https://www.bilibili.com/)
+
+在电影播放页面展示豆瓣评分：
+
+![bilibili-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/bilibili-play-page.png)
+
 ### [欧乐影院（新版）](https://www.olevod.com/)
 
 在电影详情页面展示豆瓣评分：

@@ -2,9 +2,9 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.2.3
-// @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku and so on.
-// @description:zh-CN  在腾讯视频、爱奇艺、优酷等主流电影网站上显示豆瓣评分。
+// @version      1.3.0
+// @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku, bilibili and so on.
+// @description:zh-CN  在腾讯视频、爱奇艺、优酷、哔哩哔哩等主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
 // @match        *://*.olehdtv.com/index.php*
 // @match        *://*.olevod.com/details*
@@ -14,6 +14,7 @@
 // @match        *://v.qq.com/x/cover/*
 // @match        *://www.iqiyi.com/v_*
 // @match        *://v.youku.com/video*
+// @match        *://www.bilibili.com/bangumi/play/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @connect      douban.com
@@ -77,6 +78,8 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
         IQIYI_setRating();
     } else if (host === 'v.youku.com') {
         YOUKU_setRating();
+    } else if (host === 'www.bilibili.com') {
+        BILIBILI_setRating();
     }
 })();
 
@@ -427,7 +430,7 @@ function IQIYI_setMainRating(ratingNums, url) {
 }
 
 // ==YOUKU==
-async function YOUKU_setRating() {
+function YOUKU_setRating() {
     const id = YOUKU_getID();
     const title = YOUKU_getTitle();
     // It is hard to get director and year in YOUKU, so set them to null temporarily.
@@ -455,6 +458,61 @@ function YOUKU_getTitle() {
 function YOUKU_setMainRating(ratingNums, url) {
     let ratingObj = $('div.title');
     ratingObj.after(`<a href="${url}" target="_blank" style="vertical-align:middle; margin-left:12px; color:rgba(255,255,255,0.400)">豆瓣${ratingNums}</a>`);
+}
+
+// ==BILIBILI==
+function BILIBILI_setRating() {
+    const id = BILIBILI_getID();
+    const title = BILIBILI_getTitle();
+    // It is hard to get director in BILIBILI, so set them to null temporarily.
+    const director = '';
+    const year = BILIBILI_getYear();
+    getDoubanRating(`bilibili_${id}`, title, director, year)
+        .then(data => {
+            BILIBILI_setMainRating(data.ratingNums, data.url);
+        })
+        .catch(err => {
+            BILIBILI_setMainRating("N/A", DOUBAN_RATING_API + encodeSpaces(title));
+        });
+}
+
+function BILIBILI_getID() {
+    const id = /bangumi\/play\/(\w+)/.exec(location.href);
+    return id ? id[1] : 0;
+}
+
+function BILIBILI_getTitle() {
+    const title = $('.mediainfo_mediaTitle__Zyiqh');
+    return title.text().trim();
+}
+
+function BILIBILI_getYear() {
+    const yearText = $('.mediainfo_mediaRight__SDOq4 .mediainfo_mediaDesc__jjRiB:eq(1)').text().trim();
+    const year = /(^|\S*· )(\d{4})(年| ·\S*)/.exec(yearText);
+    return year ? year[2] : '';
+}
+
+function BILIBILI_setMainRating(ratingNums, url) {
+    let ratingObj = $('.mediainfo_mediaRating__C5uvV');
+    if (ratingObj.length > 0) {
+        const mediaRatingDiv = $(`<div class="mediainfo_mediaRating__C5uvV"></div>`);
+        const mediaScoreDiv = $(`<div class="mediainfo_score__SQ_KG"></div>`);
+        const ratingLink = $(`<a href="${url}" target="_blank">${ratingNums}</a>`);
+        const ratiTextDiv = $(`<div class="mediainfo_ratingText__N8GtM">豆瓣评分</div>`);
+        mediaScoreDiv.append(ratingLink);
+        // Add span element only for the rating number.
+        if (ratingNums !== '暂无评分' && ratingNums !== 'N/A') {
+            mediaScoreDiv.append(`<span class="mediainfo_suffix__fXV4_">分</span>`);
+        }
+        // Combine all elements.
+        mediaRatingDiv.append(mediaScoreDiv).append(ratiTextDiv);
+        ratingObj.after(mediaRatingDiv);
+    } else {
+        ratingObj = $('.mediainfo_mediaRight__SDOq4 .mediainfo_mediaDesc__jjRiB:eq(0)');
+        const originalText = ratingObj.text().trim();
+        const revisedHTML = `<a href="${url}" target="_blank">豆瓣${ratingNums}</a> · ${originalText}`;
+        ratingObj.html(revisedHTML);
+    }
 }
 
 // ==COMMON==

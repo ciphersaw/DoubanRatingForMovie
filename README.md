@@ -34,6 +34,12 @@ Display Douban rating in movie play page:
 
 ![youku-play-page-v2](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-play-page-v2.png)
 
+### [bilibili](https://www.bilibili.com/)
+
+Display Douban rating in movie play page:
+
+![bilibili-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/bilibili-play-page.png)
+
 ### [Olevod (New Version)](https://www.olevod.com/)
 
 Display Douban rating in movie detail page:
