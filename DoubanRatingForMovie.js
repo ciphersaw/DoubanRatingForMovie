@@ -3,8 +3,8 @@
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
 // @version      1.3.0
-// @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku, bilibili and so on.
-// @description:zh-CN  在腾讯视频、爱奇艺、优酷、哔哩哔哩等主流电影网站上显示豆瓣评分。
+// @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku, bilibili, Migu Video, Olevod and so on.
+// @description:zh-CN  在腾讯视频、爱奇艺、优酷、哔哩哔哩、咪咕视频、欧乐影院等主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
 // @match        *://*.olehdtv.com/index.php*
 // @match        *://*.olevod.com/details*
@@ -15,6 +15,7 @@
 // @match        *://www.iqiyi.com/v_*
 // @match        *://v.youku.com/video*
 // @match        *://www.bilibili.com/bangumi/play/*
+// @match        *://www.miguvideo.com/p/detail/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @connect      douban.com
@@ -80,6 +81,8 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
         YOUKU_setRating();
     } else if (host === 'www.bilibili.com') {
         BILIBILI_setRating();
+    } else if (host === 'www.miguvideo.com') {
+        MIGU_setRating();
     }
 })();
 
@@ -513,6 +516,122 @@ function BILIBILI_setMainRating(ratingNums, url) {
         const revisedHTML = `<a href="${url}" target="_blank">豆瓣${ratingNums}</a> · ${originalText}`;
         ratingObj.html(revisedHTML);
     }
+}
+
+// ==MIGU==
+async function MIGU_setRating() {
+    const id = MIGU_getID();
+    let title = '';
+    try {
+        title = await MIGU_waitForTitle(1000, 10);
+    } catch (error) {
+        logger.error(`MIGU_waitForTitle: id=${id} error=${error}`);
+        return;
+    }
+    let director = '';
+    try {
+        director = await MIGU_waitForDirector(1000, 10);
+    } catch (error) {
+        logger.error(`MIGU_waitForDirector: id=${id} error=${error}`);
+        return;
+    }
+    let year = '';
+    try {
+        year = await MIGU_waitForYear(1000, 10);
+    } catch (error) {
+        logger.error(`MIGU_waitForYear: id=${id} error=${error}`);
+        return;
+    }
+    getDoubanRating(`migu_${id}`, title, director, year)
+        .then(data => {
+            MIGU_setMainRating(data.ratingNums, data.url);
+        })
+        .catch(err => {
+            MIGU_setMainRating("N/A", DOUBAN_RATING_API + encodeSpaces(title));
+        });
+}
+
+function MIGU_getID() {
+    const id = /p\/detail\/(\d+)/.exec(location.href);
+    return id ? id[1] : 0;
+}
+
+function MIGU_waitForTitle(delay, iterations) {
+    const selector = '.episodeTitle';
+    return new Promise((resolve, reject) => {
+        let count = 0;
+        const intervalID = setInterval(() => {
+            count++;
+            if (count === iterations) {
+                const error = new Error(`ResolveError: title is not found and iterations have reached the maximum`);
+                clearInterval(intervalID);
+                reject(error);
+            }
+            const obj = $(selector);
+            if (obj.length > 0) {
+                 // Remove the annotated suffix of title.
+                const suffixRegex = /（.*）$/;
+                const title = obj.text().trim().replace(suffixRegex, '');
+                if (title !== "") {
+                    clearInterval(intervalID);
+                    resolve(title);
+                }
+            }
+        }, delay);
+    });
+}
+
+function MIGU_waitForDirector(delay, iterations) {
+    const selector = '.program_info .tag:first-child';
+    return new Promise((resolve, reject) => {
+        let count = 0;
+        const intervalID = setInterval(() => {
+            count++;
+            if (count === iterations) {
+                const error = new Error(`ResolveError: director is not found and iterations have reached the maximum`);
+                clearInterval(intervalID);
+                reject(error);
+            }
+            const obj = $(selector);
+            if (obj.length > 0) {
+                const directorText = obj.text().trim();
+                const directors = /^导演：\s*(.+)$/.exec(directorText);
+                if (directors) {
+                    clearInterval(intervalID);
+                    resolve(directors[1]);
+                }
+            }
+        }, delay);
+    });
+}
+
+function MIGU_waitForYear(delay, iterations) {
+    const selector = '.video_tags';
+    return new Promise((resolve, reject) => {
+        let count = 0;
+        const intervalID = setInterval(() => {
+            count++;
+            if (count === iterations) {
+                const error = new Error(`ResolveError: year is not found and iterations have reached the maximum`);
+                clearInterval(intervalID);
+                reject(error);
+            }
+            const obj = $(selector);
+            if (obj.length > 0) {
+                const yearText = obj.text().trim();
+                const year = /(\d{4})/.exec(yearText);
+                if (year) {
+                    clearInterval(intervalID);
+                    resolve(year[1]);
+                }
+            }
+        }, delay);
+    });
+}
+
+function MIGU_setMainRating(ratingNums, url) {
+    let ratingObj = $('.video_tags');
+    ratingObj.append(`<a data-v-1de0f319 href="${url}" target="_blank">豆瓣评分：${ratingNums}</a>`);
 }
 
 // ==COMMON==
