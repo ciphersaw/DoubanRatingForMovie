@@ -4,7 +4,7 @@
 
 [English](README.md) | 简体中文
 
-DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/)扩展插件的用户脚本，支持在常见浏览器中使用。它生效于在线电影网站，以展示电影的豆瓣评分。
+DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/)扩展插件的用户脚本，用于在常见的视频网站上展示豆瓣评分，支持在通用浏览器中使用。
 
 ## 功能
 
@@ -14,7 +14,19 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 	- 评分数据缓存有效期，默认为一天。
 	- 过期缓存数据清理周期，默认为一天。
 
-## 已支持
+## 已支持的网站列表
+
+| 名称                                                         | 网址                       | 状态 |
+| ------------------------------------------------------------ | -------------------------- | ---- |
+| <img src="https://v.qq.com/favicon.ico" width="33" height="30" align=center/>腾讯视频 | https://v.qq.com/          | ✅    |
+| <img src="https://www.iqiyi.com/favicon.ico" width="33" height="28" align=center/>爱奇艺 | https://www.iqiyi.com/     | ✅    |
+| <img src="https://img.alicdn.com/imgextra/i2/O1CN01BeAcgL1ywY0G5nSn8_!!6000000006643-2-tps-195-195.png" width="34" height="29" align=center/>优酷 | https://youku.com/         | ✅    |
+| <img src="https://i0.hdslb.com/bfs/static/jinkela/long/images/favicon.ico" width="30" height="25" align=center/>哔哩哔哩 | https://www.bilibili.com/  | ✅    |
+| <img src="https://www.miguvideo.com/favicon.ico" width="30" height="25" align=center/>咪咕视频 | https://www.miguvideo.com/ | ✅    |
+| <img src="https://www.olevod.com/favicon.ico" width="31" height="25" align=center/>欧乐影院（新版） | https://www.olevod.com/    | ✅    |
+| <img src="https://www.olevod.com/favicon.ico" width="31" height="25" align=center/>欧乐影院（旧版） | https://www.olehdtv.com/   | ✅    |
+
+## 效果截图
 
 ### [腾讯视频](https://v.qq.com/)
 
