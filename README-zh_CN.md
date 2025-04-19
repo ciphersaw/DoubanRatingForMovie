@@ -18,13 +18,13 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 
 | 名称                                                         | 网址                       | 状态 |
 | ------------------------------------------------------------ | -------------------------- | ---- |
-| <img src="https://v.qq.com/favicon.ico" width="33" height="30" align=center/>腾讯视频 | https://v.qq.com/          | ✅    |
-| <img src="https://www.iqiyi.com/favicon.ico" width="33" height="28" align=center/>爱奇艺 | https://www.iqiyi.com/     | ✅    |
-| <img src="https://img.alicdn.com/imgextra/i2/O1CN01BeAcgL1ywY0G5nSn8_!!6000000006643-2-tps-195-195.png" width="34" height="29" align=center/>优酷 | https://youku.com/         | ✅    |
-| <img src="https://i0.hdslb.com/bfs/static/jinkela/long/images/favicon.ico" width="30" height="25" align=center/>哔哩哔哩 | https://www.bilibili.com/  | ✅    |
-| <img src="https://www.miguvideo.com/favicon.ico" width="30" height="25" align=center/>咪咕视频 | https://www.miguvideo.com/ | ✅    |
-| <img src="https://www.olevod.com/favicon.ico" width="31" height="25" align=center/>欧乐影院（新版） | https://www.olevod.com/    | ✅    |
-| <img src="https://www.olevod.com/favicon.ico" width="31" height="25" align=center/>欧乐影院（旧版） | https://www.olehdtv.com/   | ✅    |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/vqq-favicon.png" width="16" height="16" align=center/> 腾讯视频 | https://v.qq.com/          | ✅    |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iqiyi-favicon.png" width="16" height="16" align=center/> 爱奇艺 | https://www.iqiyi.com/     | ✅    |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-favicon.png" width="16" height="16" align=center/> 优酷 | https://youku.com/         | ✅    |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/bilibili-favicon.png" width="16" height="16" align=center/> 哔哩哔哩 | https://www.bilibili.com/  | ✅    |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/migu-favicon.png" width="16" height="16" align=center/> 咪咕视频 | https://www.miguvideo.com/ | ✅    |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olevod-favicon.png" width="16" height="16" align=center/> 欧乐影院（新版） | https://www.olevod.com/    | ✅    |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-favicon.png" width="16" height="16" align=center/> 欧乐影院（旧版） | https://www.olehdtv.com/   | ✅    |
 
 ## 效果截图
 

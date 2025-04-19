@@ -18,13 +18,13 @@ DoubanRatingForMovie is a userscript based on [Tampermonkey](https://www.tamperm
 
 | Name                                                         | URL                        | Status |
 | ------------------------------------------------------------ | -------------------------- | ------ |
-| <img src="https://v.qq.com/favicon.ico" width="33" height="30" align=center/>Tencent Video | https://v.qq.com/          | ✅      |
-| <img src="https://www.iqiyi.com/favicon.ico" width="33" height="28" align=center/>iQIYI | https://www.iqiyi.com/     | ✅      |
-| <img src="https://img.alicdn.com/imgextra/i2/O1CN01BeAcgL1ywY0G5nSn8_!!6000000006643-2-tps-195-195.png" width="34" height="29" align=center/>Youku | https://youku.com/         | ✅      |
-| <img src="https://i0.hdslb.com/bfs/static/jinkela/long/images/favicon.ico" width="30" height="25" align=center/>bilibili | https://www.bilibili.com/  | ✅      |
-| <img src="https://www.miguvideo.com/favicon.ico" width="30" height="25" align=center/>Migu Video | https://www.miguvideo.com/ | ✅      |
-| <img src="https://www.olevod.com/favicon.ico" width="31" height="25" align=center/>Olevod (New Version) | https://www.olevod.com/    | ✅      |
-| <img src="https://www.olevod.com/favicon.ico" width="31" height="25" align=center/>Olevod (Old Version) | https://www.olehdtv.com/   | ✅      |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/vqq-favicon.png" width="16" height="16" align=center/> Tencent Video | https://v.qq.com/          | ✅      |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iqiyi-favicon.png" width="16" height="16" align=center/> iQIYI | https://www.iqiyi.com/     | ✅      |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-favicon.png" width="16" height="16" align=center/> Youku | https://youku.com/         | ✅      |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/bilibili-favicon.png" width="16" height="16" align=center/> bilibili | https://www.bilibili.com/  | ✅      |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/migu-favicon.png" width="16" height="16" align=center/> Migu Video | https://www.miguvideo.com/ | ✅      |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olevod-favicon.png" width="16" height="16" align=center/> Olevod (New Version) | https://www.olevod.com/    | ✅      |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-favicon.png" width="16" height="16" align=center/> Olevod (Old Version) | https://www.olehdtv.com/   | ✅      |
 
 ## Screenshots
 
