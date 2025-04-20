@@ -200,25 +200,7 @@ function OLEVOD_waitForTitle(delay, iterations) {
     } else if (OLEVOD_isPlayPage()) {
         selector = ".el-tabs__content .tab-label";
     }
-    return new Promise((resolve, reject) => {
-        let count = 0;
-        const intervalID = setInterval(() => {
-            count++;
-            if (count === iterations) {
-                const error = new Error(`ResolveError: title is not found and iterations have reached the maximum`);
-                clearInterval(intervalID);
-                reject(error);
-            }
-            const obj = $(selector);
-            if (obj.length > 0) {
-                const title = OLEVOD_resolveTitle(obj);
-                if (title !== "") {
-                    clearInterval(intervalID);
-                    resolve(title);
-                }
-            }
-        }, delay);
-    });
+    return waitForElement(selector, delay, iterations, obj => OLEVOD_resolveTitle(obj));
 }
 
 function OLEVOD_resolveTitle(obj) {
@@ -389,25 +371,7 @@ function IQIYI_getID() {
 
 function IQIYI_waitForTitle(delay, iterations) {
     const selector = '.meta_titleNotCloud__O2Ffr';
-    return new Promise((resolve, reject) => {
-        let count = 0;
-        const intervalID = setInterval(() => {
-            count++;
-            if (count === iterations) {
-                const error = new Error(`ResolveError: title is not found and iterations have reached the maximum`);
-                clearInterval(intervalID);
-                reject(error);
-            }
-            const obj = $(selector);
-            if (obj.length > 0) {
-                const title = obj.text().trim();
-                if (title !== "") {
-                    clearInterval(intervalID);
-                    resolve(title);
-                }
-            }
-        }, delay);
-    });
+    return waitForElement(selector, delay, iterations, obj => obj.text().trim());
 }
 
 function IQIYI_setMainRating(ratingNums, url) {
@@ -558,74 +522,27 @@ function MIGU_getID() {
 
 function MIGU_waitForTitle(delay, iterations) {
     const selector = '.episodeTitle';
-    return new Promise((resolve, reject) => {
-        let count = 0;
-        const intervalID = setInterval(() => {
-            count++;
-            if (count === iterations) {
-                const error = new Error(`ResolveError: title is not found and iterations have reached the maximum`);
-                clearInterval(intervalID);
-                reject(error);
-            }
-            const obj = $(selector);
-            if (obj.length > 0) {
-                 // Remove the annotated suffix of title.
-                const suffixRegex = /（.*）$/;
-                const title = obj.text().trim().replace(suffixRegex, '');
-                if (title !== "") {
-                    clearInterval(intervalID);
-                    resolve(title);
-                }
-            }
-        }, delay);
+    return waitForElement(selector, delay, iterations, obj => {
+        const suffixRegex = /（.*）$/;
+        return obj.text().trim().replace(suffixRegex, '');
     });
 }
 
 function MIGU_waitForDirector(delay, iterations) {
     const selector = '.program_info .tag:first-child';
-    return new Promise((resolve, reject) => {
-        let count = 0;
-        const intervalID = setInterval(() => {
-            count++;
-            if (count === iterations) {
-                const error = new Error(`ResolveError: director is not found and iterations have reached the maximum`);
-                clearInterval(intervalID);
-                reject(error);
-            }
-            const obj = $(selector);
-            if (obj.length > 0) {
-                const directorText = obj.text().trim();
-                const directors = /^导演：\s*(.+)$/.exec(directorText);
-                if (directors) {
-                    clearInterval(intervalID);
-                    resolve(directors[1]);
-                }
-            }
-        }, delay);
+    return waitForElement(selector, delay, iterations, obj => {
+        const directorText = obj.text().trim();
+        const directors = /^导演：\s*(.+)$/.exec(directorText);
+        return directors ? directors[1] : '';
     });
 }
 
 function MIGU_waitForYear(delay, iterations) {
     const selector = '.video_tags';
-    return new Promise((resolve, reject) => {
-        let count = 0;
-        const intervalID = setInterval(() => {
-            count++;
-            if (count === iterations) {
-                const error = new Error(`ResolveError: year is not found and iterations have reached the maximum`);
-                clearInterval(intervalID);
-                reject(error);
-            }
-            const obj = $(selector);
-            if (obj.length > 0) {
-                const yearText = obj.text().trim();
-                const year = /(\d{4})/.exec(yearText);
-                if (year) {
-                    clearInterval(intervalID);
-                    resolve(year[1]);
-                }
-            }
-        }, delay);
+    return waitForElement(selector, delay, iterations, obj => {
+        const yearText = obj.text().trim();
+        const year = /(\d{4})/.exec(yearText);
+        return year ? year[1] : '';
     });
 }
 
@@ -649,6 +566,22 @@ function clearExpiredCache() {
         });
         GM_setValue('clear_time', new Date().toISOString());
     }
+}
+
+function waitForElement(selector, delay = 1000, iterations = 10, resolveFn) {
+    return new Promise((resolve, reject) => {
+        let count = 0;
+        const interval = setInterval(() => {
+            const element = $(selector);
+            if (element.length > 0) {
+                clearInterval(interval);
+                resolve(resolveFn(element));
+            } else if (++count >= iterations) {
+                clearInterval(interval);
+                reject(new Error(`ResolveError: element ${selector} not found after ${iterations} attempts`));
+            }
+        }, delay);
+    });
 }
 
 async function getDoubanRating(key, title, director, year) {
