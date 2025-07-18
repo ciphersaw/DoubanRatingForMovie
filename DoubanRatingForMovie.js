@@ -300,7 +300,7 @@ function OLEVOD_isDetailPage() {
 }
 
 function OLEVOD_isPlayPage() {
-    return /.+\/player\/vod\/\d{1}-\d{4,5}-\d{1}\.html/.test(location.href);
+    return /.+\/player\/vod\/\d{1}-\d{4,5}-\d+\.html/.test(location.href);
 }
 
 // ==VQQ==
