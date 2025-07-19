@@ -574,8 +574,11 @@ function waitForElement(selector, delay = 1000, iterations = 10, resolveFn) {
         const interval = setInterval(() => {
             const element = $(selector);
             if (element.length > 0) {
-                clearInterval(interval);
-                resolve(resolveFn(element));
+                let result = resolveFn(element);
+                if (result !== "") {
+                    clearInterval(interval);
+                    resolve(result);
+                }
             } else if (++count >= iterations) {
                 clearInterval(interval);
                 reject(new Error(`ResolveError: element ${selector} not found after ${iterations} attempts`));
