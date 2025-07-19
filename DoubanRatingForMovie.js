@@ -189,7 +189,7 @@ async function OLEVOD_setRating() {
 }
 
 function OLEVOD_getID() {
-    const id = /\d{1}-\d{4,5}/.exec(location.href);
+    const id = /\d{1,2}-\d{4,5}/.exec(location.href);
     return id ? id[0] : 0;
 }
 
@@ -296,11 +296,11 @@ function OLEVOD_setMainRating(ratingNums, url) {
 }
 
 function OLEVOD_isDetailPage() {
-    return /.+\/details-\d{1}-\d{4,5}\.html/.test(location.href);
+    return /.+\/details-\d{1,2}-\d{4,5}\.html/.test(location.href);
 }
 
 function OLEVOD_isPlayPage() {
-    return /.+\/player\/vod\/\d{1}-\d{4,5}-\d+\.html/.test(location.href);
+    return /.+\/player\/vod\/\d{1,2}-\d{4,5}-\d+\.html/.test(location.href);
 }
 
 // ==VQQ==
