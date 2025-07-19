@@ -2,7 +2,7 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.3.0
+// @version      1.3.1
 // @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku, bilibili, Migu Video, Olevod and so on.
 // @description:zh-CN  在腾讯视频、爱奇艺、优酷、哔哩哔哩、咪咕视频、欧乐影院等主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
@@ -13,7 +13,7 @@
 // @match        *://*.olevod.tv/player/vod/*
 // @match        *://v.qq.com/x/cover/*
 // @match        *://www.iqiyi.com/v_*
-// @match        *://v.youku.com/video*
+// @match        *://v.youku.com/v_show/*
 // @match        *://www.bilibili.com/bangumi/play/*
 // @match        *://www.miguvideo.com/p/detail/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
@@ -413,7 +413,7 @@ function YOUKU_setRating() {
 }
 
 function YOUKU_getID() {
-    const id = /s=([\w\d]+)/.exec(location.href);
+    const id = /id_(\S+).html/.exec(location.href);
     return id ? id[1] : 0;
 }
 
