@@ -250,8 +250,8 @@ function OLEVOD_setMainRating(ratingNums, url) {
 
         // Set MutationObserver for the title element of current page.
         const titleObj = $('.pc-container .info .title');
-        const originalText = titleObj.text().trim();
         if (titleObj.length > 0) {
+            const originalText = titleObj.text().trim();
             const observer = new MutationObserver(observerCallback);
             observer.observe(titleObj[0], { subtree: true, characterData: true });
 
@@ -429,6 +429,47 @@ function YOUKU_setMainRating(ratingNums, url) {
 
 // ==BILIBILI==
 function BILIBILI_setRating() {
+    BILIBILI_setRating_SPA();
+    // Set MutationObserver for the title element of current page.
+    const titleObj = $('.mediainfo_mediaTitle__Zyiqh');
+    if (titleObj
+        .length > 0) {
+        let originalText = titleObj.text().trim();
+        const observer = new MutationObserver(observerCallback);
+        observer.observe(titleObj[0], { childList: true, subtree: true, characterData: true });
+
+        // Stop watching for mutations before page is unloaded.
+        window.onbeforeunload = () => {
+            if (observer) {
+                observer.disconnect();
+            }
+        };
+
+        function observerCallback(mutations, observer) {
+            mutations.forEach(function (mutation) {
+                // Check if the character data is changed.
+                if (mutation.type === 'characterData') {
+                    const changedText = mutation.target.data.trim();
+                    // If the movie page is reloaded by AJAX,
+                    // remove the Douban rating of current page and reset for the new page.
+                    if (originalText !== changedText) {
+                        originalText = changedText;
+                       let ratingObj = $('.mediainfo_mediaRating__C5uvV');
+                        if (ratingObj.length > 1) {
+                            ratingObj.last().remove();
+                        } else {
+                            ratingObj = $('.mediainfo_mediaRight__SDOq4 .mediainfo_mediaDesc__jjRiB:eq(0)');
+                            ratingObj.find('a').remove();
+                        }
+                        BILIBILI_setRating_SPA();
+                    }
+                }
+            });
+        }
+    }
+}
+
+function BILIBILI_setRating_SPA() {
     const id = BILIBILI_getID();
     const title = BILIBILI_getTitle();
     // It is hard to get director in BILIBILI, so set them to null temporarily.
@@ -476,9 +517,7 @@ function BILIBILI_setMainRating(ratingNums, url) {
         ratingObj.after(mediaRatingDiv);
     } else {
         ratingObj = $('.mediainfo_mediaRight__SDOq4 .mediainfo_mediaDesc__jjRiB:eq(0)');
-        const originalText = ratingObj.text().trim();
-        const revisedHTML = `<a href="${url}" target="_blank">豆瓣${ratingNums}</a> · ${originalText}`;
-        ratingObj.html(revisedHTML);
+        ratingObj.prepend(`<a href="${url}" target="_blank">豆瓣${ratingNums}&nbsp;&nbsp;·&nbsp;&nbsp;<!-- --></a>`);
     }
 }
 
