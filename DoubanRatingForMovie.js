@@ -2,9 +2,9 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.3.1
-// @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku, bilibili, Migu Video, Olevod and so on.
-// @description:zh-CN  在腾讯视频、爱奇艺、优酷、哔哩哔哩、咪咕视频、欧乐影院等主流电影网站上显示豆瓣评分。
+// @version      1.4.0
+// @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku, bilibili, Migu Video, Olevod, AIYIFAN and so on.
+// @description:zh-CN  在腾讯视频、爱奇艺、优酷、哔哩哔哩、咪咕视频、欧乐影院、爱壹帆等主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
 // @match        *://*.olehdtv.com/index.php*
 // @match        *://*.olevod.com/details*
@@ -16,6 +16,8 @@
 // @match        *://v.youku.com/v_show/*
 // @match        *://www.bilibili.com/bangumi/play/*
 // @match        *://www.miguvideo.com/p/detail/*
+// @match        *://www.iyf.tv/play/*
+// @match        *://www.yfsp.tv/play/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @connect      douban.com
@@ -83,6 +85,8 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
         BILIBILI_setRating();
     } else if (host === 'www.miguvideo.com') {
         MIGU_setRating();
+    } else if (host === 'www.iyf.tv' || host === 'www.yfsp.tv') {
+        IYF_setRating();
     }
 })();
 
@@ -432,8 +436,7 @@ function BILIBILI_setRating() {
     BILIBILI_setRating_SPA();
     // Set MutationObserver for the title element of current page.
     const titleObj = $('.mediainfo_mediaTitle__Zyiqh');
-    if (titleObj
-        .length > 0) {
+    if (titleObj.length > 0) {
         let originalText = titleObj.text().trim();
         const observer = new MutationObserver(observerCallback);
         observer.observe(titleObj[0], { childList: true, subtree: true, characterData: true });
@@ -588,6 +591,95 @@ function MIGU_waitForYear(delay, iterations) {
 function MIGU_setMainRating(ratingNums, url) {
     let ratingObj = $('.video_tags');
     ratingObj.append(`<a data-v-1de0f319 href="${url}" target="_blank">豆瓣评分：${ratingNums}</a>`);
+}
+
+// ==IYF==
+async function IYF_setRating() {
+    const id = IYF_getID();
+    let title = '';
+    try {
+        title = await IYF_waitForTitle(1000, 10);
+    } catch (error) {
+        logger.error(`IYF_waitForTitle: id=${id} error=${error}`);
+        return;
+    }
+    let director = '';
+    try {
+        director = await IYF_waitForDirector(1000, 10);
+    } catch (error) {
+        // Note that director is not mandatory, so do not return here.
+        logger.error(`IYF_waitForDirector: id=${id} error=${error}`);
+    }
+    // It is hard to get year in IYF, so set them to null temporarily.
+    const year = '';
+    getDoubanRating(`iyf_${id}`, title, director, year)
+        .then(data => {
+            IYF_setMainRating(data.ratingNums, data.url);
+        })
+        .catch(err => {
+            IYF_setMainRating("N/A", DOUBAN_RATING_API + encodeSpaces(title));
+        });
+}
+
+function IYF_getID() {
+    const id = /play\/(\w+)/.exec(location.href);
+    return id ? id[1] : 0;
+}
+
+function IYF_waitForTitle(delay, iterations) {
+    const selector = '.h4.d-inline.h4:first-child';
+    return waitForElement(selector, delay, iterations, obj => {
+        const suffixRegex = /\(.*\)$/;
+        return obj.text().trim().replace(suffixRegex, '');
+    });
+}
+
+function IYF_waitForDirector(delay, iterations) {
+    const selector = 'div.directors span.ng-star-inserted';
+    return waitForElement(selector, delay, iterations, obj => {
+        return obj.text().trim();
+    });
+}
+
+function IYF_setMainRating(ratingNums, url) {
+    let ratingObj = $('div.d-inline-flex.align-items-center');
+    let attr = ratingObj[0].attributes;
+    let ngcontentAttr = attr.item(0).name;
+    ratingObj.append(`<div ${ngcontentAttr} style="margin: 0 15px; width: 1px; height: 15px; background-color: rgba(255, 255, 255, 0.2);" class="ng-star-inserted"></div>`);
+    ratingObj.append(`<div ${ngcontentAttr} class="d-flex align-items-center"><div ${ngcontentAttr} class="rate"><div ${ngcontentAttr} class="value"><a ${ngcontentAttr} class="value" href="${url}" target="_blank">豆瓣${ratingNums}</a></div></div></div>`);
+
+    // Set MutationObserver for the title element of current page.
+    const titleObj = $('.h4.d-inline.h4:first-child');
+    if (titleObj.length > 0) {
+       let originalText = titleObj.text().trim();
+        const observer = new MutationObserver(observerCallback);
+        observer.observe(titleObj[0], { childList: true, subtree: true, characterData: true });
+
+        // Stop watching for mutations before page is unloaded.
+        window.onbeforeunload = () => {
+            if (observer) {
+                observer.disconnect();
+            }
+        };
+
+        function observerCallback(mutations, observer) {
+            mutations.forEach(function (mutation) {
+                // Check if the character data is changed.
+                if (mutation.type === 'characterData') {
+                    const changedText = mutation.target.data.trim();
+                    // If the movie page is reloaded by AJAX,
+                    // remove the Douban rating of current page and reset for the new page.
+                    if (originalText !== changedText) {
+                        let ratingObj = $('div.d-inline-flex.align-items-center');
+                        ratingObj.children().last().remove();
+                        ratingObj.children().last().remove();
+                        observer.disconnect();
+                        IYF_setRating();
+                    }
+                }
+            });
+        }
+    }
 }
 
 // ==COMMON==

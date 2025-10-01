@@ -23,6 +23,7 @@ DoubanRatingForMovie is a userscript based on [Tampermonkey](https://www.tamperm
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-favicon.png" width="16" height="16" align=center/> Youku | https://youku.com/         | ✅      |
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/bilibili-favicon.png" width="16" height="16" align=center/> bilibili | https://www.bilibili.com/  | ✅      |
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/migu-favicon.png" width="16" height="16" align=center/> Migu Video | https://www.miguvideo.com/ | ✅      |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iyf-favicon.png" width="16" height="16" align=center/> AIYIFAN | https://www.iyf.tv/ | ✅      |
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olevod-favicon.png" width="16" height="16" align=center/> Olevod (New Version) | https://www.olevod.com/    | ✅      |
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-favicon.png" width="16" height="16" align=center/> Olevod (Old Version) | https://www.olehdtv.com/   | ✅      |
 
@@ -56,7 +57,13 @@ Display Douban rating in movie play page:
 
 Display Douban rating in movie play page:
 
-![bilibili-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/migu-play-page.png)
+![migu-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/migu-play-page.png)
+
+### [AIYIFAN](https://www.iyf.tv/)
+
+Display Douban rating in movie play page:
+
+![iyf-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iyf-play-page.png)
 
 ### [Olevod (New Version)](https://www.olevod.com/)
 

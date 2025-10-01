@@ -23,6 +23,7 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/youku-favicon.png" width="16" height="16" align=center/> 优酷 | https://youku.com/         | ✅    |
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/bilibili-favicon.png" width="16" height="16" align=center/> 哔哩哔哩 | https://www.bilibili.com/  | ✅    |
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/migu-favicon.png" width="16" height="16" align=center/> 咪咕视频 | https://www.miguvideo.com/ | ✅    |
+| <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iyf-favicon.png" width="16" height="16" align=center/> 爱壹帆 | https://www.iyf.tv/ | ✅    |
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olevod-favicon.png" width="16" height="16" align=center/> 欧乐影院（新版） | https://www.olevod.com/    | ✅    |
 | <img src="https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/olehdtv-favicon.png" width="16" height="16" align=center/> 欧乐影院（旧版） | https://www.olehdtv.com/   | ✅    |
 
@@ -57,6 +58,12 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 在电影播放页面展示豆瓣评分：
 
 ![migu-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/migu-play-page.png)
+
+### [爱壹帆](https://www.iyf.tv/)
+
+在电影播放页面展示豆瓣评分：
+
+![iyf-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iyf-play-page.png)
 
 ### [欧乐影院（新版）](https://www.olevod.com/)
 
