@@ -16,8 +16,8 @@
 // @match        *://v.youku.com/v_show/*
 // @match        *://www.bilibili.com/bangumi/play/*
 // @match        *://www.miguvideo.com/p/detail/*
-// @match        *://www.iyf.tv/play/*
-// @match        *://www.yfsp.tv/play/*
+// @match        *://www.iyf.tv/*
+// @match        *://www.yfsp.tv/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @connect      douban.com
@@ -594,7 +594,34 @@ function MIGU_setMainRating(ratingNums, url) {
 }
 
 // ==IYF==
-async function IYF_setRating() {
+function IYF_setRating() {
+    IYF_setRating_SPA();
+    // Set MutationObserver for changing page.
+    let lastUrl = location.href;
+    const observer = new MutationObserver(observerCallback);
+    observer.observe(document, {subtree: true, childList: true});
+
+    // Stop watching for mutations before page is unloaded.
+    window.onbeforeunload = () => {
+        if (observer) {
+            observer.disconnect();
+        }
+    };
+
+    function observerCallback(observer) {
+        if (location.href !== lastUrl) {
+            lastUrl = location.href;
+            IYF_setRating_SPA();
+        }
+    }
+}
+
+async function IYF_setRating_SPA() {
+    // Check if the current URL is movie play page.
+    if (/www\.(iyf|yfsp)\.tv\/play\//.test(location.href) === false) {
+        return;
+    }
+
     const id = IYF_getID();
     let title = '';
     try {
@@ -646,7 +673,7 @@ function IYF_setMainRating(ratingNums, url) {
     let attr = ratingObj[0].attributes;
     let ngcontentAttr = attr.item(0).name;
     ratingObj.append(`<div ${ngcontentAttr} style="margin: 0 15px; width: 1px; height: 15px; background-color: rgba(255, 255, 255, 0.2);" class="ng-star-inserted"></div>`);
-    ratingObj.append(`<div ${ngcontentAttr} class="d-flex align-items-center"><div ${ngcontentAttr} class="rate"><div ${ngcontentAttr} class="value"><a ${ngcontentAttr} class="value" href="${url}" target="_blank">豆瓣${ratingNums}</a></div></div></div>`);
+    ratingObj.append(`<div ${ngcontentAttr} class="d-flex align-items-center douban-rating"><div ${ngcontentAttr} class="rate"><div ${ngcontentAttr} class="value"><a ${ngcontentAttr} class="value" href="${url}" target="_blank">豆瓣${ratingNums}</a></div></div></div>`);
 
     // Set MutationObserver for the title element of current page.
     const titleObj = $('.h4.d-inline.h4:first-child');
@@ -671,10 +698,11 @@ function IYF_setMainRating(ratingNums, url) {
                     // remove the Douban rating of current page and reset for the new page.
                     if (originalText !== changedText) {
                         let ratingObj = $('div.d-inline-flex.align-items-center');
-                        ratingObj.children().last().remove();
-                        ratingObj.children().last().remove();
+                        if (ratingObj.children().last().hasClass('douban-rating')) {
+                            ratingObj.children().last().remove();
+                            ratingObj.children().last().remove();
+                        }
                         observer.disconnect();
-                        IYF_setRating();
                     }
                 }
             });
