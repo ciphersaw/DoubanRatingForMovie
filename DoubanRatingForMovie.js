@@ -608,17 +608,23 @@ function IYF_setRating() {
         }
     };
 
-    function observerCallback(observer) {
+    function observerCallback() {
         if (location.href !== lastUrl) {
+            const tmpURL = lastUrl;
             lastUrl = location.href;
+            // Do not set rating if the source URL has already been a movie play page,
+            // or it may set wrong rating because the previous page is not unloaded completely.
+            if (/www\.(iyf|yfsp)\.tv\/play\//.test(tmpURL)) {
+                return;
+            }
             IYF_setRating_SPA();
         }
     }
 }
 
 async function IYF_setRating_SPA() {
-    // Check if the current URL is movie play page.
-    if (/www\.(iyf|yfsp)\.tv\/play\//.test(location.href) === false) {
+    // Check if the current URL is a movie play page.
+    if (!/www\.(iyf|yfsp)\.tv\/play\//.test(location.href)) {
         return;
     }
 
@@ -703,6 +709,7 @@ function IYF_setMainRating(ratingNums, url) {
                             ratingObj.children().last().remove();
                         }
                         observer.disconnect();
+                        IYF_setRating_SPA();
                     }
                 }
             });
