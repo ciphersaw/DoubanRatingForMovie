@@ -259,13 +259,6 @@ function OLEVOD_setMainRating(ratingNums, url) {
             const observer = new MutationObserver(observerCallback);
             observer.observe(titleObj[0], { subtree: true, characterData: true });
 
-            // Stop watching for mutations before page is unloaded.
-            window.onbeforeunload = () => {
-                if (observer) {
-                    observer.disconnect();
-                }
-            };
-
             function observerCallback(mutations, observer) {
                 mutations.forEach(function (mutation) {
                     // Check if the character data is changed.
@@ -441,13 +434,6 @@ function BILIBILI_setRating() {
         const observer = new MutationObserver(observerCallback);
         observer.observe(titleObj[0], { childList: true, subtree: true, characterData: true });
 
-        // Stop watching for mutations before page is unloaded.
-        window.onbeforeunload = () => {
-            if (observer) {
-                observer.disconnect();
-            }
-        };
-
         function observerCallback(mutations, observer) {
             mutations.forEach(function (mutation) {
                 // Check if the character data is changed.
@@ -601,13 +587,6 @@ function IYF_setRating() {
     const observer = new MutationObserver(observerCallback);
     observer.observe(document, {subtree: true, childList: true});
 
-    // Stop watching for mutations before page is unloaded.
-    window.onbeforeunload = () => {
-        if (observer) {
-            observer.disconnect();
-        }
-    };
-
     function observerCallback() {
         if (location.href !== lastUrl) {
             const tmpURL = lastUrl;
@@ -687,13 +666,6 @@ function IYF_setMainRating(ratingNums, url) {
        let originalText = titleObj.text().trim();
         const observer = new MutationObserver(observerCallback);
         observer.observe(titleObj[0], { childList: true, subtree: true, characterData: true });
-
-        // Stop watching for mutations before page is unloaded.
-        window.onbeforeunload = () => {
-            if (observer) {
-                observer.disconnect();
-            }
-        };
 
         function observerCallback(mutations, observer) {
             mutations.forEach(function (mutation) {
