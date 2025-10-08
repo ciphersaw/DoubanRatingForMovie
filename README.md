@@ -13,6 +13,7 @@ DoubanRatingForMovie is a userscript based on [Tampermonkey](https://www.tamperm
 - Cache rating data for reducing query frequency.
 	- The term of valid cache is set to one day by default.
 	- The period of clearing expired cache is set to one day by default.
+	- Support manual clearing of cached data.
 
 ## Supported Website List
 

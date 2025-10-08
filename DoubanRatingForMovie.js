@@ -27,6 +27,7 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        GM_listValues
+// @grant        GM_registerMenuCommand
 // @supportURL   https://github.com/ciphersaw/DoubanRatingForMovie/issues
 // @downloadURL  https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.user.js
 // @updateURL    https://update.greasyfork.org/scripts/494757/DoubanRatingForMovie.meta.js
@@ -68,6 +69,7 @@ const PERIOD_OF_CLEARING_CACHE = 1;
 const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
 
 (function () {
+    initConfigMenu();
     clearExpiredCache();
     const host = location.hostname;
     if (host === 'www.olehdtv.com') {
@@ -690,6 +692,15 @@ function IYF_setMainRating(ratingNums, url) {
 }
 
 // ==COMMON==
+function initConfigMenu() {
+    GM_registerMenuCommand("清空缓存", function() {
+        if (confirm("确定要清空所有豆瓣评分缓存数据吗？")) {
+            GM_listValues().forEach(key => GM_deleteValue(key));
+            logger.info(`Clear all Douban rating cached data`);
+        }
+    });
+}
+
 function clearExpiredCache() {
     const t = GM_getValue('clear_time');
     if (!t || !isValidTime(new Date(t), PERIOD_OF_CLEARING_CACHE)) {
