@@ -2,7 +2,7 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.4.0
+// @version      1.4.1
 // @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku, bilibili, Migu Video, Olevod, AIYIFAN and so on.
 // @description:zh-CN  在腾讯视频、爱奇艺、优酷、哔哩哔哩、咪咕视频、欧乐影院、爱壹帆等主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
@@ -306,8 +306,7 @@ function OLEVOD_isPlayPage() {
 function VQQ_setRating() {
     const id = VQQ_getID();
     const title = VQQ_getTitle();
-    // It is hard to get director in VQQ, so set them to null temporarily.
-    const director = '';
+    const director = VQQ_getDirector();
     const year = VQQ_getYear();
     getDoubanRating(`vqq_${id}`, title, director, year)
         .then(data => {
@@ -319,26 +318,57 @@ function VQQ_setRating() {
 }
 
 function VQQ_getID() {
-    const id = /x\/cover\/(\S+)\//.exec(location.href);
+    const id = /x\/cover\/([^\/.]+)/.exec(location.href);
     return id ? id[1] : 0;
 }
 
 function VQQ_getTitle() {
     // Remove the annotated suffix of title.
     const suffixRegex = /\[.*\]$/;
-    const title = $('h1.playlist-intro__title');
-    return title.text().trim().replace(suffixRegex, '');
+    const titleElement = $('div.intro-title');
+    const title = titleElement.attr('title');
+    return title.trim().replace(suffixRegex, '');
+}
+
+function VQQ_getDirector() {
+    const directorElements = $('div.desc-info .star-item');
+    return directorElements.first().text().trim() || '';
+
 }
 
 function VQQ_getYear() {
-    const yearText = $('span.playlist-intro-info__item').text();
-    const year = /\S*· (\d{4}) ·\S*/.exec(yearText);
-    return year ? year[1] : '';
+    const yearElement = $('div.desc-info .info-item:nth-child(2)');
+    const yearText = yearElement.text().trim();
+    const year = /^\d{4}$/.exec(yearText);
+    return year ? year[0] : '';
 }
 
 function VQQ_setMainRating(ratingNums, url) {
-    let ratingObj = $('h1.playlist-intro__title');
-    ratingObj.after(`<a href="${url}" target="_blank" style="vertical-align:middle; margin-right:6px; color:rgba(255,255,255,0.600)">豆瓣${ratingNums}</a>`);
+    const doubanRatingElement = $('div.intro-tag[dt-params*="title=douban"] span.intro-tag__text');
+    if (doubanRatingElement.length > 0) {
+        // If Douban rating element exists, update its link.
+        const originalText = doubanRatingElement.text();
+        doubanRatingElement.html(`<a href="${url}" target="_blank">${originalText}</a>`);
+    } else {
+        // If not, find Tencent rating's parent container.
+        const tencentRatingContainer = $('div.intro-tag[dt-params*="title=tencent"]').closest('div.intro-tags');
+        if (tencentRatingContainer.length > 0) {
+            // Create Douban rating container and place it after Tencent rating.
+            let displayText = ratingNums;
+            if (ratingNums !== '暂无评分' && ratingNums !== 'N/A') {
+                displayText = `${ratingNums}分`;
+            }
+            tencentRatingContainer.after(`
+                <div class="intro-tags" data-v-62f1ab82>
+                    <div class="intro-tag" data-v-62f1ab82 data-v-abe944e3 dt-eid="grade" dt-params="cid=${VQQ_getID()}&mod_id=mod_introduce&pgid=page_detail&title=douban">
+                        <span class="intro-tag__text" data-v-abe944e3>
+                            <a href="${url}" target="_blank">豆瓣 ${displayText}</a>
+                        </span>
+                    </div>
+                </div>
+            `);
+        }
+    }
 }
 
 // ==IQIYI==
