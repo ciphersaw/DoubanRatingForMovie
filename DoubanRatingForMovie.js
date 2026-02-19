@@ -400,7 +400,10 @@ function IQIYI_getID() {
 
 function IQIYI_waitForTitle(delay, iterations) {
     const selector = '.meta_titleNotCloud__O2Ffr';
-    return waitForElement(selector, delay, iterations, obj => obj.text().trim());
+    return waitForElement(selector, delay, iterations, obj => {
+        const suffixRegex = /（.*）$/;
+        return obj.text().trim().replace(suffixRegex, '');
+    });
 }
 
 function IQIYI_setMainRating(ratingNums, url) {
