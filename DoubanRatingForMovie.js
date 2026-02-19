@@ -414,7 +414,7 @@ function IQIYI_setMainRating(ratingNums, url) {
             flexObj.css("align-items", "center");
             // Insert rating div element after title div element.
             let ratingObj = $('.meta_titleNotCloud__O2Ffr');
-            ratingObj.after(`<div id="doubanRating" style="margin-left:6px"><a href="${url}" target="_blank" style="color:#f939; font-family:IQYHT-Medium">豆瓣${ratingNums}</a></div>`);
+            ratingObj.after(`<div id="doubanRating" style="margin-top:2px;margin-right:6px"><a href="${url}" target="_blank" style="color:#ff8000; font-family:IQYHT-Medium">豆瓣${ratingNums}</a></div>`);
         } else {
             count++;
         }

@@ -40,7 +40,7 @@ DoubanRatingForMovie 是一个应用于[篡改猴](https://www.tampermonkey.net/
 
 在电影播放页面展示豆瓣评分：
 
-![iqiyi-play-page](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iqiyi-play-page.png)
+![iqiyi-play-page-v2](https://blog-1255335783.cos.ap-guangzhou.myqcloud.com/DoubanRatingForMovie/README/iqiyi-play-page-v2.png)
 
 ### [优酷](https://youku.com/)
 
