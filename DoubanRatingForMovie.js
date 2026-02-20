@@ -16,6 +16,7 @@
 // @match        *://v.youku.com/v_show/*
 // @match        *://www.bilibili.com/bangumi/play/*
 // @match        *://www.miguvideo.com/p/detail/*
+// @match        *://www.miguvideo.com/mgs/promotion/subject/security-check/prd/index.html*
 // @match        *://www.iyf.tv/*
 // @match        *://www.yfsp.tv/*
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
@@ -86,7 +87,11 @@ const DOUBAN_RATING_API = 'https://www.douban.com/search?cat=1002&q=';
     } else if (host === 'www.bilibili.com') {
         BILIBILI_setRating();
     } else if (host === 'www.miguvideo.com') {
-        MIGU_setRating();
+        if (location.href.includes('security-check')) {
+            MIGU_bypassSecurityCheck();
+        } else {
+            MIGU_setRating();
+        }
     } else if (host === 'www.iyf.tv' || host === 'www.yfsp.tv') {
         IYF_setRating();
     }
@@ -612,6 +617,19 @@ function MIGU_waitForYear(delay, iterations) {
 function MIGU_setMainRating(ratingNums, url) {
     let ratingObj = $('.video_tags');
     ratingObj.append(`<a data-v-1de0f319 href="${url}" target="_blank">豆瓣评分：${ratingNums}</a>`);
+}
+
+function MIGU_bypassSecurityCheck() {
+    // Get the loc parameter from URL which contains the douban URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const loc = urlParams.get('loc');
+    try {
+        // Decode the URL and redirect to it
+        const targetUrl = decodeURIComponent(loc);
+        window.location.href = targetUrl;
+    } catch (error) {
+        logger.error(`MIGU_bypassSecurityCheck: error=${error}`);
+    }
 }
 
 // ==IYF==
