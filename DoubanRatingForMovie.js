@@ -2,7 +2,7 @@
 // @name         DoubanRatingForMovie
 // @name:zh-CN   在线电影添加豆瓣评分
 // @namespace    https://github.com/ciphersaw/DoubanRatingForMovie
-// @version      1.4.1
+// @version      1.4.2
 // @description  Display Douban rating for online movies such as Tencent Video, iQIYI, Youku, bilibili, Migu Video, Olevod, AIYIFAN and so on.
 // @description:zh-CN  在腾讯视频、爱奇艺、优酷、哔哩哔哩、咪咕视频、欧乐影院、爱壹帆等主流电影网站上显示豆瓣评分。
 // @author       CipherSaw
@@ -404,7 +404,7 @@ function IQIYI_getID() {
 }
 
 function IQIYI_waitForTitle(delay, iterations) {
-    const selector = '.meta_titleNotCloud__O2Ffr';
+    const selector = '.meta_titleNotCloud__hcX4j';
     return waitForElement(selector, delay, iterations, obj => {
         const suffixRegex = /（.*）$/;
         return obj.text().trim().replace(suffixRegex, '');
@@ -418,10 +418,10 @@ function IQIYI_setMainRating(ratingNums, url) {
         if (obj.length === 0) {
             count = 0;
             // Set the align-items to center, for the parent div element with flex layout.
-            let flexObj = $('.meta_titleContent__cUi2t');
+            let flexObj = $('.meta_titleContent__2Ivjj');
             flexObj.css("align-items", "center");
             // Insert rating div element after title div element.
-            let ratingObj = $('.meta_titleNotCloud__O2Ffr');
+            let ratingObj = $('.meta_titleNotCloud__hcX4j');
             ratingObj.after(`<div id="doubanRating" style="margin-top:2px;margin-right:6px"><a href="${url}" target="_blank" style="color:#ff8000; font-family:IQYHT-Medium">豆瓣${ratingNums}</a></div>`);
         } else {
             count++;
