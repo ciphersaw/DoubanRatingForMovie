@@ -348,7 +348,15 @@ function VQQ_getYear() {
     return year ? year[0] : '';
 }
 
-function VQQ_setMainRating(ratingNums, url) {
+async function VQQ_setMainRating(ratingNums, url) {
+    // Wait for the rating tags container to be loaded.
+    try {
+        await VQQ_waitForRatingTags(1000, 10);
+    } catch (error) {
+        logger.error(`VQQ_waitForRatingTags: error=${error}`);
+        return;
+    }
+    // Find and set the Douban rating element.
     const doubanRatingElement = $('div.intro-tag[dt-params*="title=douban"] span.intro-tag__text');
     if (doubanRatingElement.length > 0) {
         // If Douban rating element exists, update its link.
@@ -374,6 +382,12 @@ function VQQ_setMainRating(ratingNums, url) {
             `);
         }
     }
+}
+
+function VQQ_waitForRatingTags(delay, iterations) {
+    // Wait for any rating tag (tencent/douban/imdb) to be loaded.
+    const selector = 'div.intro-tag[dt-params*="title="]';
+    return waitForElement(selector, delay, iterations, obj => 'ready');
 }
 
 // ==IQIYI==
@@ -620,11 +634,11 @@ function MIGU_setMainRating(ratingNums, url) {
 }
 
 function MIGU_bypassSecurityCheck() {
-    // Get the loc parameter from URL which contains the douban URL
+    // Get the loc parameter from URL which contains the douban URL.
     const urlParams = new URLSearchParams(window.location.search);
     const loc = urlParams.get('loc');
     try {
-        // Decode the URL and redirect to it
+        // Decode the URL and redirect to it.
         const targetUrl = decodeURIComponent(loc);
         window.location.href = targetUrl;
     } catch (error) {
