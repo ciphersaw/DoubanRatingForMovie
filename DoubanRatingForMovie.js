@@ -308,9 +308,17 @@ function OLEVOD_isPlayPage() {
 }
 
 // ==VQQ==
-function VQQ_setRating() {
+async function VQQ_setRating() {
     const id = VQQ_getID();
-    const title = VQQ_getTitle();
+    let title = '';
+    try {
+        title = await VQQ_waitForTitle(1000, 10);
+    } catch (error) {
+        logger.error(`VQQ_waitForTitle: id=${id} error=${error}`);
+        return;
+    }
+    // Note that director and year must be selected after VQQ_waitForTitle,
+    // which means elements have been already loaded and do not need to wait again.
     const director = VQQ_getDirector();
     const year = VQQ_getYear();
     getDoubanRating(`vqq_${id}`, title, director, year)
@@ -327,12 +335,13 @@ function VQQ_getID() {
     return id ? id[1] : 0;
 }
 
-function VQQ_getTitle() {
-    // Remove the annotated suffix of title.
-    const suffixRegex = /\[.*\]$/;
-    const titleElement = $('div.intro-title');
-    const title = titleElement.attr('title');
-    return title.trim().replace(suffixRegex, '');
+function VQQ_waitForTitle(delay, iterations) {
+    const selector = 'div.intro-title';
+    return waitForElement(selector, delay, iterations, obj => {
+        const suffixRegex = /\[.*\]$/;
+        const title = obj.attr('title');
+        return title.trim().replace(suffixRegex, '');
+    });
 }
 
 function VQQ_getDirector() {
